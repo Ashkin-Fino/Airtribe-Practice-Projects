@@ -17,6 +17,8 @@ public class Batch {
     private String status = "UPCOMING";
     private EnrollmentMethod enrollment_type;
     private final Course course;
+    private Trainer trainer;
+
 
     // ID generator for batch id
     private static String generateBatchId() {
@@ -184,6 +186,14 @@ public class Batch {
 
         return endDate;
     }
+    
+    public Trainer getTrainer() { 
+        return trainer; 
+    }
+
+    public void setTrainer(Trainer trainer) { 
+        this.trainer = trainer; 
+    }
 
     @Override
     public String toString() {
@@ -194,6 +204,7 @@ public class Batch {
                 ", end_date=" + end_date +
                 ", status='" + status + '\'' +
                 ", course=" + course.getName() +
+                ", trainer=" + (trainer != null ? trainer.getFirst_name() + " " + trainer.getLast_name() : "Not Assigned") +
                 '}';
     }
 }

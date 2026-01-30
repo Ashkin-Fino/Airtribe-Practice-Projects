@@ -1,13 +1,17 @@
 package com.airtribe.learntrack.service;
 
-import com.airtribe.learntrack.utils.Utils;
 import com.airtribe.learntrack.entity.Course;
+import com.airtribe.learntrack.repository.Repository;
 import com.airtribe.learntrack.ui.View;
+import com.airtribe.learntrack.utils.Utils;
+import java.util.List;
 
 public class CourseService {
     
-    public CourseService() {
-        // Default constructor
+    private final Repository repository;
+
+    public CourseService(Repository repository) {
+        this.repository = repository;
     }
 
     public void menu() {
@@ -39,19 +43,69 @@ public class CourseService {
         }
     }
 
+    // 1. Add Course
     private Course addCourse() {
-        return null;
+        System.out.println("Enter Course Name: ");
+        String name = Utils.getStringInput();
+
+        System.out.println("Enter Duration (e.g., '2 weeks', '3 months'): ");
+        String duration = Utils.getStringInput();
+
+        System.out.println("Enter Description (optional): ");
+        String description = Utils.getStringInput();
+
+        Course course = new Course(name, duration);
+        if (description != null && !description.trim().isEmpty()) {
+            course.setDescription(description);
+        }
+        repository.courses.add(course);
+
+        System.out.println("✅ Course added successfully: " + course);
+        return course;
     }
 
+    // 2. Search Course by ID
     private Course searchCourse() {
+        System.out.println("Enter Course ID to search: ");
+        String id = Utils.getStringInput();
+
+        for (Course course : repository.courses) {
+            if (course.getCourse_id().equalsIgnoreCase(id)) {
+                System.out.println("🔍 Course found: " + course);
+                return course;
+            }
+        }
+        System.out.println("⚠️ Course not found with ID: " + id);
         return null;
     }
 
+    // 3. Deactivate Course
     private Course deactivateCourse() {
+        System.out.println("Enter Course ID to deactivate: ");
+        String id = Utils.getStringInput();
+
+        for (Course course : repository.courses) {
+            if (course.getCourse_id().equalsIgnoreCase(id)) {
+                course.setIs_active(false);
+                System.out.println("🚫 Course deactivated: " + course);
+                return course;
+            }
+        }
+        System.out.println("⚠️ Course not found with ID: " + id);
         return null;
     }
 
+    // 4. View All Courses
     private Course viewAllCourses() {
-        return null;
+        if (repository.courses.isEmpty()) {
+            System.out.println("📭 No courses available.");
+            return null;
+        }
+
+        System.out.println("📋 List of all courses:");
+        for (Course course : repository.courses) {
+            System.out.println(course);
+        }
+        return null; // Not returning a specific course, just displaying all
     }
 }

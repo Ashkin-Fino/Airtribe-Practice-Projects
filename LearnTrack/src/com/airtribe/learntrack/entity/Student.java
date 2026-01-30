@@ -15,7 +15,7 @@ public class Student extends Person {
         return "STU-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
     }
 
-    // Parameterized constructor
+    // Parameterized constructor with name, email and age
     public Student(String first_name, String last_name, String email, int age) {
         super(first_name, last_name, email, age);
         this.student_id = generateStudentId();
@@ -23,7 +23,6 @@ public class Student extends Person {
     }
 
     // Getters and Setters with validation
-
     public String getStudent_id() {
         return student_id;
     }

@@ -81,9 +81,7 @@ public class View {
         System.out.println("Enrollment Management");
         System.out.println("|-1-- Enroll new Student");
         System.out.println("|-2-- Cancel Enrollment");
-        System.out.println("4) Batch Management");
-        System.out.println("5) Enrollment Management");
-        System.out.println("6) Exit Application");
+        System.out.println("|-3-- Back to Main Menu");
         System.out.println("Enter your input: ");
     }
 }

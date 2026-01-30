@@ -1,18 +1,20 @@
 package com.airtribe.learntrack.service;
 
-import com.airtribe.learntrack.utils.Utils;
 import com.airtribe.learntrack.entity.Student;
+import com.airtribe.learntrack.repository.Repository;
 import com.airtribe.learntrack.ui.View;
+import com.airtribe.learntrack.utils.Utils;
 
 public class StudentService {
 
-    public StudentService() {
-        // Default constructor
+    private final Repository repository;
+
+    public StudentService(Repository repository) {
+        this.repository = repository;
     }
 
     public void menu() {
         boolean back = false;
-        // infinite loop to keep the application running
         while (!back) {
             View.studentSubmenuView();
             int userInput = Utils.getUserInput(1, 5);
@@ -40,18 +42,62 @@ public class StudentService {
     }
 
     private Student addStudent() {
-        return null;
+        System.out.println("Enter First Name*: ");
+        String firstName = Utils.getStringInput(true);
+
+        System.out.println("Enter Last Name*: ");
+        String lastName = Utils.getStringInput(true);
+
+        System.out.println("Enter Email*: ");
+        String email = Utils.getStringInput(true);
+
+        System.out.println("Enter Age*: ");
+        int age = Utils.getIntInput(true);
+
+        Student student = new Student(firstName, lastName, email, age);
+        repository.students.add(student);
+
+        System.out.println("Student added successfully: " + student.toString());
+        return student;
     }
 
     private Student searchStudent() {
+        System.out.println("Enter Student Id to search: ");
+        String id = Utils.getStringInput();
+
+        for (Student student : repository.students) {
+            if (student.getStudent_id().equalsIgnoreCase(id)) {
+                System.out.println("Student found: " + student.toString());
+                return student;
+            }
+        }
+        System.out.println("Student not found with ID: " + id);
         return null;
     }
 
     private Student deactivateStudent() {
+        System.out.println("Enter Student Id to Deactivate:");
+        String id = Utils.getStringInput();
+
+        for (Student student : repository.students) {
+            if (student.getStudent_id().equalsIgnoreCase(id)) {
+                student.setIs_active(false);
+                System.out.println("Student deactivated: " + student);
+                return student;
+            }
+        }
+        System.out.println("Student not found with ID: " + id);
         return null;
     }
 
-    private Student viewAllStudents() {
-        return null;
+    private void viewAllStudents() {
+        if (repository.students.isEmpty()) {
+            System.out.println("No students available.");
+        } else {
+            System.out.println("Found Students:");
+            for (Student student : repository.students) {
+                System.out.println(student.toString());
+            }
+        }
     }
 }
