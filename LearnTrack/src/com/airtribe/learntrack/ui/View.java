@@ -44,6 +44,14 @@ public class View {
         System.out.println("Enter your input: ");
     }
 
+    public static void studentSearchSubmenuView() {
+        System.out.println("Student Search");
+        System.out.println("|-1--Search by ID");
+        System.out.println("|-2--Search by Name");
+        System.out.println("|-3--Back to Main Menu");
+        System.out.println("Enter your input: ");
+    }
+
     public static void trainerSubmenuView() {
         System.out.println("Trainer Management");
         System.out.println("|-1--Add Trainer");

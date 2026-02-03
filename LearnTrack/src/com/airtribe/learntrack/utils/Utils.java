@@ -2,8 +2,6 @@ package com.airtribe.learntrack.utils;
 
 import java.util.Scanner;
 
-import com.airtribe.learntrack.exceptions.EmptyValueException;
-
 public class Utils {
 
     private static final Scanner scanner = new Scanner(System.in);

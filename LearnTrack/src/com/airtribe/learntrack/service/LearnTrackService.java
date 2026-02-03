@@ -8,13 +8,12 @@ import com.airtribe.learntrack.utils.Utils;
 
 public class LearnTrackService {
 
-    private List<Integer> inputs = new ArrayList<Integer>();
-    private Repository repository = new Repository();
-    private StudentService studentService = new StudentService(repository);
-    private TrainerService trainerService = new TrainerService(repository);
-    private CourseService courseService = new CourseService(repository);
-    private BatchService batchService = new BatchService(repository);
-    private EnrollmentService enrollmentService = new EnrollmentService(repository);
+    private final Repository repository = new Repository();
+    private final StudentService studentService = new StudentService(repository);
+    private final TrainerService trainerService = new TrainerService(repository);
+    private final CourseService courseService = new CourseService(repository);
+    private final BatchService batchService = new BatchService(repository);
+    private final EnrollmentService enrollmentService = new EnrollmentService(repository);
 
     // Default constructor
     public LearnTrackService() {
@@ -26,7 +25,6 @@ public class LearnTrackService {
     while (!exit) {
         View.mainMenuView();
         int userInput = Utils.getUserInput(1, 6);
-        this.inputs.add(userInput);
         switch (userInput) {
             case 1:
                 studentService.menu();
