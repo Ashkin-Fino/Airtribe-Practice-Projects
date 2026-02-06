@@ -46,8 +46,8 @@ public class Repository {
     /*
     Returns a copy of the list of Trainers.
     */
-    public List<Student> getTrainers() {
-        return new ArrayList<>(this.students);
+    public List<Trainer> getTrainers() {
+        return new ArrayList<>(this.trainers);
     }
 
     /*
@@ -61,8 +61,8 @@ public class Repository {
     /*
     Returns a copy of the list of Batches.
     */
-    public List<Student> getBatches() {
-        return new ArrayList<>(this.students);
+    public List<Batch> getBatches() {
+        return new ArrayList<>(this.batches);
     }
 
     /*
@@ -76,8 +76,8 @@ public class Repository {
     /*
     Returns a copy of the list of Courses.
     */
-    public List<Student> getCourses() {
-        return new ArrayList<>(this.students);
+    public List<Course> getCourses() {
+        return new ArrayList<>(this.courses);
     }
 
     /*
@@ -91,8 +91,8 @@ public class Repository {
     /*
     Returns a copy of the list of Enrollments.
     */
-    public List<Student> getEnrollments() {
-        return new ArrayList<>(this.students);
+    public List<Enrollment> getEnrollments() {
+        return new ArrayList<>(this.enrollments);
     }
 
     /*
