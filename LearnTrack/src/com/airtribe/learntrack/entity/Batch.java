@@ -1,5 +1,6 @@
 package com.airtribe.learntrack.entity;
 
+import com.airtribe.learntrack.constants.BatchStatus;
 import com.airtribe.learntrack.constants.EnrollmentMethod;
 import java.time.LocalDate;
 import java.util.UUID;
@@ -12,10 +13,10 @@ import java.util.regex.Pattern;
 public class Batch {
     private String name;
     private final String id;
-    private LocalDate start_date;
-    private LocalDate end_date;
-    private String status = "UPCOMING";
-    private EnrollmentMethod enrollment_type;
+    private LocalDate startDate;
+    private LocalDate endDate;
+    private BatchStatus status = BatchStatus.UPCOMING;
+    private EnrollmentMethod enrollmentType;
     private final Course course;
     private Trainer trainer;
 
@@ -25,10 +26,7 @@ public class Batch {
         return "BAT-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
     }
 
-    // Valid status values
-    private static final String[] VALID_STATUSES = {"UPCOMING", "ONGOING", "COMPLETED", "CANCELLED"};
-
-    // Parameterized constructor with course.
+    // Parameterized constructor with course and name.
     public Batch(Course course, String name) {
         this.id = generateBatchId();
         this.course = course;
@@ -36,22 +34,22 @@ public class Batch {
     }
 
     // Parameterized constructor with name, start date and course.
-    public Batch(String name, LocalDate start_date, Course course) {
+    public Batch(String name, LocalDate startDate, Course course) {
         this(course, name);
-        this.setStart_date(start_date);
+        this.setStartDate(startDate);
 
         // Calculate end_date based on course duration
         LocalDate calculatedEndDate = null;
-        if (start_date != null && course != null && course.getDuration() != null) {
-            calculatedEndDate = calculateEndDate(start_date, course.getDuration());
-            this.setEnd_date(calculatedEndDate);
+        if (startDate != null && course != null && course.getDuration() != null) {
+            calculatedEndDate = calculateEndDate(startDate, course.getDuration());
+            this.setEndDate(calculatedEndDate);
         }
 
         // Set status based on start_date and calculatedEndDate relative to current date
         LocalDate currentDate = LocalDate.now();
-        if (start_date.isBefore(currentDate) && calculatedEndDate.isBefore(currentDate)) {
+        if (startDate.isBefore(currentDate) && calculatedEndDate.isBefore(currentDate)) {
             this.setStatus("COMPLETED");
-        } else if (start_date.isBefore(currentDate) || start_date.isEqual(currentDate)) {
+        } else if (startDate.isBefore(currentDate) || startDate.isEqual(currentDate)) {
             this.setStatus("ONGOING");
         } else {
             this.setStatus("UPCOMING");
@@ -78,67 +76,51 @@ public class Batch {
         return id;
     }
 
-    public LocalDate getStart_date() {
-        return start_date;
+    public LocalDate getStartDate() {
+        return startDate;
     }
 
-    public void setStart_date(LocalDate start_date) {
-        if (start_date == null) {
+    public void setStartDate(LocalDate startDate) {
+        if (startDate == null) {
             throw new IllegalArgumentException("Start date cannot be null");
-        } else if (start_date.isAfter(this.end_date)) {
+        } else if (startDate.isAfter(this.endDate)) {
             throw new IllegalArgumentException("Course already ended");
-        } else if (start_date.isAfter(this.start_date)) {
+        } else if (startDate.isAfter(this.startDate)) {
             throw new IllegalArgumentException("Course already started");
         }
-        this.start_date = start_date;
-        this.setEnd_date(calculateEndDate(start_date, course.getDuration()));
+        this.startDate = startDate;
+        this.setEndDate(calculateEndDate(startDate, course.getDuration()));
     }
 
-    public LocalDate getEnd_date() {
-        return end_date;
+    public LocalDate getEndDate() {
+        return endDate;
     }
 
-    private void setEnd_date(LocalDate end_date) {
-        if (end_date == null) {
+    private void setEndDate(LocalDate endDate) {
+        if (endDate == null) {
             throw new IllegalArgumentException("End date cannot be null");
         }
-        this.end_date = end_date;
+        this.endDate = endDate;
     }
 
-    public String getStatus() {
-        return status;
+    public BatchStatus getStatus() {
+        return this.status;
     }
 
     public void setStatus(String status) {
-        if (status == null || status.trim().isEmpty()) {
-            throw new IllegalArgumentException("Status cannot be null or empty");
-        }
-        String upperStatus = status.toUpperCase().trim();
-        boolean isValid = false;
-        for (String validStatus : VALID_STATUSES) {
-            if (validStatus.equals(upperStatus)) {
-                isValid = true;
-                break;
-            }
-        }
-        if (!isValid) {
-            throw new IllegalArgumentException("Invalid status. Must be one of: " + 
-                String.join(", ", VALID_STATUSES));
-        }
-        this.status = upperStatus;
+        this.status = BatchStatus.fromString(status);
     }
 
     public Course getCourse() {
         return course;
     }
 
-    public EnrollmentMethod getEnrollment_type() {
-        return enrollment_type;
+    public EnrollmentMethod getEnrollmentType() {
+        return enrollmentType;
     }
 
-    public void setEnrollment_type(String enrollment_type) {
-        EnrollmentMethod enrollmentMethod = EnrollmentMethod.fromString(enrollment_type);
-        this.enrollment_type = enrollmentMethod;
+    public void setEnrollmentType(String enrollmentType) {
+        this.enrollmentType = EnrollmentMethod.fromString(enrollmentType);
     }
 
     /**
@@ -200,11 +182,11 @@ public class Batch {
         return "Batch{" +
                 "id='" + id + '\'' +
                 ", name='" + name + '\'' +
-                ", start_date=" + start_date +
-                ", end_date=" + end_date +
+                ", start_date=" + startDate +
+                ", end_date=" + endDate +
                 ", status='" + status + '\'' +
                 ", course=" + course.getName() +
-                ", trainer=" + (trainer != null ? trainer.getFirst_name() + " " + trainer.getLast_name() : "Not Assigned") +
+                ", trainer=" + (trainer != null ? trainer.getFirstName() + " " + trainer.getLastName() : "Not Assigned") +
                 '}';
     }
 }
