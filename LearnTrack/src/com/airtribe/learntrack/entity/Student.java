@@ -27,7 +27,7 @@ public class Student extends Person {
         return active;
     }
 
-    public void set_active(boolean isActive) {
+    public void setActive(boolean isActive) {
         this.active = isActive;
     }
 

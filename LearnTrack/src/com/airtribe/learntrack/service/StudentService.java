@@ -2,6 +2,7 @@ package com.airtribe.learntrack.service;
 
 import com.airtribe.learntrack.entity.Student;
 import com.airtribe.learntrack.repository.Repository;
+import com.airtribe.learntrack.service.searchservice.Searchable;
 import com.airtribe.learntrack.service.searchservice.StudentSearchService;
 import com.airtribe.learntrack.ui.View;
 import com.airtribe.learntrack.utils.Utils;
@@ -9,7 +10,7 @@ import com.airtribe.learntrack.utils.Utils;
 public class StudentService {
 
     private final Repository repository;
-    private final StudentSearchService studentSearchService;
+    private final Searchable<Student> studentSearchService;
 
     public StudentService(Repository repository) {
         this.repository = repository;
@@ -26,7 +27,7 @@ public class StudentService {
                     this.addStudent();
                     break;
                 case 2:
-                    this.studentSearchService.searchStudent();
+                    this.studentSearchService.search();
                     break;
                 case 3:
                     this.deactivateStudent();
@@ -44,7 +45,7 @@ public class StudentService {
         }
     }
 
-    private Student addStudent() {
+    private void addStudent() {
         System.out.println("Enter First Name*: ");
         String firstName = Utils.getStringInput(true);
 
@@ -61,16 +62,20 @@ public class StudentService {
         repository.addStudent(student);
 
         System.out.println("Student added successfully: " + student.toString());
-        return student;
+        return;
     }
 
-    private Student deactivateStudent() {
+    private void deactivateStudent() {
         System.out.println("Identify Student to deactivate...");
-        Student studentToDeactivate = this.studentSearchService.searchStudent();
+        Student studentToDeactivate = this.studentSearchService.search();
+
+        if (studentToDeactivate == null) {
+            System.out.println("No student selected");
+        }
 
         System.out.println("Confirm deactivation of student:" + studentToDeactivate);
-        studentToDeactivate.setIs_active(false);
-        return studentToDeactivate;
+        studentToDeactivate.setActive(false);
+        return;
     }
 
     private void viewAllStudents() {
