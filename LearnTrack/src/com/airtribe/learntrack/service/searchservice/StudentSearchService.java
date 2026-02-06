@@ -5,7 +5,7 @@ import com.airtribe.learntrack.repository.Repository;
 import com.airtribe.learntrack.ui.View;
 import com.airtribe.learntrack.utils.Utils;
 
-public class StudentSearchService {
+public class StudentSearchService implements Searchable<Student>{
 
     Repository repository;
     
@@ -13,10 +13,10 @@ public class StudentSearchService {
         this.repository = repository;
     }
 
-    public Student searchStudent() {
+    public Student search() {
         Student result = null;
         View.studentSearchSubmenuView();
-        int userInput = Utils.getUserInput(0, 3);
+        int userInput = Utils.getUserInput(1, 3);
         switch(userInput) {
             case 1:
                 result = this.searchStudentById();
@@ -31,11 +31,35 @@ public class StudentSearchService {
         return result;
     }
 
-    private Student searchStudentByName() {
-        throw new UnsupportedOperationException("Unimplemented method 'searchSrudentByName'");
-    }
-
     private Student searchStudentById() {
-        throw new UnsupportedOperationException("Unimplemented method 'searchStudentById'");
+        System.out.println("Enter Student ID: ");
+        String id = Utils.getStringInput(true);
+    
+        for (Student student : repository.getStudents()) {
+            if (student.getId() == id) {
+                System.out.println("Student found: " + student);
+                return student;
+            }
+        }
+    
+        System.out.println("Student not found.");
+        return null;
     }
+    
+    private Student searchStudentByName() {
+        System.out.println("Enter Student Name: ");
+        String name = Utils.getStringInput(true).toLowerCase();
+    
+        for (Student student : repository.getStudents()) {
+            String fullName = (student.getFirstName() + " " + student.getLastName()).toLowerCase();
+    
+            if (fullName.contains(name)) {
+                System.out.println("Student found: " + student);
+                return student;
+            }
+        }
+    
+        System.out.println("Student not found.");
+        return null;
+    }    
 }
