@@ -7,8 +7,8 @@ import java.util.UUID;
  * Extends Person class.
  */
 public class Trainer extends Person {
-    private final String trainer_id;
-    private boolean is_active;
+    
+    private boolean active;
     private String specialisation;
 
     // ID generator for trainer_id
@@ -17,25 +17,20 @@ public class Trainer extends Person {
     }
 
     // Parameterized constructor
-    public Trainer(String first_name, String last_name, String email, int age, String specialisation) {
-        super(first_name, last_name, email, age);
-        this.trainer_id = generateTrainerId();
+    public Trainer(String firstName, String lastName, String email, int age, String specialisation) {
+        super(generateTrainerId(), firstName, lastName, email, age);
         this.setSpecialisation(specialisation);
-        this.is_active = true;
+        this.active = true;
     }
 
     // Getters and Setters with validation
 
-    public String getTrainer_id() {
-        return trainer_id;
+    public boolean isActive() {
+        return active;
     }
 
-    public boolean getIs_active() {
-        return is_active;
-    }
-
-    public void setIs_active(boolean is_active) {
-        this.is_active = is_active;
+    public void setActive(boolean isActive) {
+        this.active = isActive;
     }
 
     public String getSpecialisation() {
@@ -55,8 +50,7 @@ public class Trainer extends Person {
     @Override
     public String toString() {
         return "Trainer{" +
-                "trainer_id='" + trainer_id + '\'' +
-                ", is_active=" + is_active +
+                ", is_active=" + active +
                 ", specialisation='" + specialisation + '\'' +
                 ", " + super.toString() +
                 '}';

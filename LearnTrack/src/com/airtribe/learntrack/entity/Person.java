@@ -3,56 +3,63 @@ package com.airtribe.learntrack.entity;
 /**
  * Base class representing a person in the learning management system.
  */
-public class Person {
-    private String first_name;
-    private String last_name;
+public abstract class Person {
+
+    private final String id;
+    private String firstName;
+    private String lastName;
     private String email;
     private int age;
 
     // Parameterized constructor
-    public Person(String first_name, String last_name, String email, int age) {
-        this.setFirst_name(first_name);
-        this.setLast_name(last_name);
+    public Person(String id, String firstName, String lastName, String email, int age) {
+        this.id = id;
+        this.setFirstName(firstName);
+        this.setLastName(lastName);
         this.setEmail(email);
         this.setAge(age);
     }
 
     // Getters and Setters with validation
 
-    public String getFirst_name() {
-        return first_name;
+    public String getId() {
+        return id;
+    }
+    
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setFirst_name(String first_name) {
-        if (first_name == null || first_name.trim().isEmpty()) {
+    public void setFirstName(String firstName) {
+        if (firstName == null || firstName.trim().isEmpty()) {
             throw new IllegalArgumentException("First name cannot be null or empty");
         }
-        if (first_name.length() > 50) {
+        if (firstName.length() > 50) {
             throw new IllegalArgumentException("First name cannot exceed 50 characters");
         }
         // Check for numbers and special characters (only allow letters, spaces, hyphens, and apostrophes)
-        if (!first_name.matches("^[a-zA-Z\\s'-]+$")) {
+        if (!firstName.matches("^[a-zA-Z\\s'-]+$")) {
             throw new IllegalArgumentException("First name cannot contain numbers or special characters (only letters, spaces, hyphens, and apostrophes are allowed)");
         }
-        this.first_name = first_name.trim();
+        this.firstName = firstName.trim();
     }
 
-    public String getLast_name() {
-        return last_name;
+    public String getLastName() {
+        return lastName;
     }
 
-    public void setLast_name(String last_name) {
-        if (last_name == null || last_name.trim().isEmpty()) {
+    public void setLastName(String lastName) {
+        if (lastName == null || lastName.trim().isEmpty()) {
             throw new IllegalArgumentException("Last name cannot be null or empty");
         }
-        if (last_name.length() > 50) {
+        if (lastName.length() > 50) {
             throw new IllegalArgumentException("Last name cannot exceed 50 characters");
         }
         // Check for numbers and special characters (only allow letters, spaces, hyphens, and apostrophes)
-        if (!last_name.matches("^[a-zA-Z\\s'-]+$")) {
+        if (!lastName.matches("^[a-zA-Z\\s'-]+$")) {
             throw new IllegalArgumentException("Last name cannot contain numbers or special characters (only letters, spaces, hyphens, and apostrophes are allowed)");
         }
-        this.last_name = last_name.trim();
+        this.lastName = lastName.trim();
     }
 
     public String getEmail() {
@@ -71,7 +78,7 @@ public class Person {
     }
 
     public String getFullName() {
-        return first_name + " " + last_name;
+        return firstName + " " + lastName;
     }
 
     public int getAge() {
@@ -91,8 +98,8 @@ public class Person {
     @Override
     public String toString() {
         return "Person{" +
-                "first_name='" + first_name + '\'' +
-                ", last_name='" + last_name + '\'' +
+                "first_name='" + firstName + '\'' +
+                ", last_name='" + lastName + '\'' +
                 ", email='" + email + '\'' +
                 ", age=" + age +
                 '}';
