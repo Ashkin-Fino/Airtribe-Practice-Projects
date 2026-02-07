@@ -1,9 +1,14 @@
 package com.airtribe.learntrack.service;
 
+import com.airtribe.learntrack.constants.BatchStatus;
 import com.airtribe.learntrack.entity.Batch;
 import com.airtribe.learntrack.entity.Course;
 import com.airtribe.learntrack.entity.Trainer;
 import com.airtribe.learntrack.repository.Repository;
+import com.airtribe.learntrack.service.searchservice.BatchSearchService;
+import com.airtribe.learntrack.service.searchservice.CourseSearchService;
+import com.airtribe.learntrack.service.searchservice.Searchable;
+import com.airtribe.learntrack.service.searchservice.TrainerSearchService;
 import com.airtribe.learntrack.ui.View;
 import com.airtribe.learntrack.utils.Utils;
 import java.time.LocalDate;
@@ -11,9 +16,16 @@ import java.time.LocalDate;
 public class BatchService {
 
     private final Repository repository;
+    private final Searchable<Batch> batchSearchService;
+    private final Searchable<Course> courseSearchService;
+    private final Searchable<Trainer> trainerSearchService;
 
     public BatchService(Repository repository) {
         this.repository = repository;
+        this.courseSearchService = new CourseSearchService(repository);
+        this.batchSearchService = new BatchSearchService(repository, this.courseSearchService);
+        this.trainerSearchService = new TrainerSearchService(repository);
+        
     }
 
     public void menu() {
@@ -26,18 +38,27 @@ public class BatchService {
                     this.addBatch();
                     break;
                 case 2:
-                    this.searchBatch();
+                    this.batchSearchService.search();
                     break;
                 case 3:
-                    this.deactivateBatch();
+                    this.cancelBatch();
                     break;
                 case 4:
-                    this.viewAllbatches();
+                    this.viewOngoingBatches();
                     break;
                 case 5:
-                    this.assignTrainerToBatch();
+                    this.viewCompletedBatches();
                     break;
                 case 6:
+                    this.assignTrainerToBatch();
+                    break;
+                case 7:
+                    this.viewAllStudentsInBatch();
+                    break;
+                case 8:
+                    this.viewAllBatches();
+                    break;
+                case 9:
                     back = true;
                     break;
                 default:
@@ -48,116 +69,127 @@ public class BatchService {
     }
 
     // 1. Add Batch
-    private Batch addBatch() {
+    private void addBatch() {
         System.out.println("Enter Batch Name: ");
-        String name = Utils.getStringInput();
+        String name = Utils.getStringInput(true);
 
         System.out.println("Enter Start Date (YYYY-MM-DD): ");
-        LocalDate startDate = LocalDate.parse(Utils.getStringInput());
+        LocalDate startDate = LocalDate.parse(Utils.getStringInput(true));
 
-        System.out.println("Enter Course ID: ");
-        String courseId = Utils.getStringInput();
-
-        Course selectedCourse = null;
-        for (Course c : repository.courses) {
-            if (c.getCourse_id().equalsIgnoreCase(courseId)) {
-                selectedCourse = c;
-                break;
-            }
-        }
+        Course selectedCourse = this.courseSearchService.search();
 
         if (selectedCourse == null) {
-            System.out.println("⚠️ Course not found!");
-            return null;
+            System.out.println("Course not found! Try again with a different course.");
+            return;
         }
 
-        Batch batch = new Batch(name, startDate, selectedCourse);
-        repository.batches.add(batch);
-        System.out.println("✅ Batch added successfully: " + batch);
-        return batch;
+        try {
+            Batch batch = new Batch(name, startDate, selectedCourse);
+            repository.addBatch(batch);
+            System.out.println("Batch added successfully: " + batch);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Couldnt create batch. Please try again: " + e.toString());
+        }
+        return;
     }
 
-    // 2. Search Batch
-    private Batch searchBatch() {
-        System.out.println("Enter Batch ID: ");
-        String id = Utils.getStringInput();
+    // 3. Cancel Batch
+    private void cancelBatch() {
+        System.out.println("Identify Batch to cancel...");
+        Batch batchToCancel = this.batchSearchService.search();
 
-        for (Batch batch : repository.batches) {
-            if (batch.getId().equalsIgnoreCase(id)) {
-                System.out.println("🔍 Found: " + batch);
-                return batch;
+        if (batchToCancel == null) {
+            System.out.println("No batch selected");
+        } else {
+            System.out.println("Cancelling batch:" + batchToCancel);
+            batchToCancel.setStatus("CANCELLED");
+        }
+        return;
+    }
+
+    // 4. View Ongoing batches
+    private void viewOngoingBatches() {
+
+        boolean found = false;
+
+        for (Batch batch : repository.getBatches()) {
+            if (batch.getStatus() == BatchStatus.ONGOING) {
+                if (!found) {
+                    System.out.println("Ongoing Batches:");
+                    found = true;
+                }
+                System.out.println(batch);
             }
         }
-        System.out.println("⚠️ Batch not found!");
-        return null;
+
+        if (!found) {
+            System.out.println("No ongoing batches found.");
+        }
+        return;
     }
 
-    // 3. Deactivate Batch
-    private Batch deactivateBatch() {
-        System.out.println("Enter Batch ID to deactivate: ");
-        String id = Utils.getStringInput();
+    // 5. View Completed batches
+    private void viewCompletedBatches() {
+        
+        boolean found = false;
 
-        for (Batch batch : repository.batches) {
-            if (batch.getId().equalsIgnoreCase(id)) {
-                batch.setStatus("CANCELLED");
-                System.out.println("🚫 Batch deactivated: " + batch);
-                return batch;
+        for (Batch batch : repository.getBatches()) {
+            if (batch.getStatus() == BatchStatus.COMPLETED) {
+                if (!found) {
+                    System.out.println("Completed Batches:");
+                    found = true;
+                }
+                System.out.println(batch);
             }
         }
-        System.out.println("⚠️ Batch not found!");
-        return null;
-    }
 
-    // 4. View All repository.batches
-    private Batch viewAllbatches() {
-        if (repository.batches.isEmpty()) {
-            System.out.println("📭 No repository.batches available.");
-            return null;
+        if (!found) {
+            System.out.println("No completed batches found.");
         }
-        System.out.println("📋 All repository.batches:");
-        for (Batch batch : repository.batches) {
-            System.out.println(batch);
-        }
-        return null;
+        return;
     }
 
     // 5. Assign Trainer to Batch
-    private Batch assignTrainerToBatch() {
-        System.out.println("Enter Batch ID: ");
-        String batchId = Utils.getStringInput();
+    private void assignTrainerToBatch() {
+        System.out.println("Identify Batch to view students...");
+        Batch batch = this.batchSearchService.search();
 
-        System.out.println("Enter Trainer ID: ");
-        String trainerId = Utils.getStringInput();
+        System.out.println("Select Trainer to add.");
+        Trainer trainer = this.trainerSearchService.search();
 
-        Batch selectedBatch = null;
-        Trainer selectedTrainer = null;
+        batch.setTrainer(trainer);
+        System.out.println("Assigned Trainer: " + trainer.getFullName() + 
+            " to Batch: " + batch.getName() + ".");
+        return;
+    }
 
-        for (Batch batch : repository.batches) {
-            if (batch.getId().equalsIgnoreCase(batchId)) {
-                selectedBatch = batch;
-                break;
+    // 7. View all students in batch
+    private void viewAllStudentsInBatch() {
+        System.out.println("Identify Batch to view students...");
+        // Batch batchToViewStudents = this.batchSearchService.search();
+        
+        //search enrollments. filter based on batch.
+
+        return;
+    }
+
+    // 8. View All batches
+    private void viewAllBatches() {
+        
+        boolean found = false;
+
+        System.out.println("All Batches:");
+        for (Batch batch : repository.getBatches()) {
+            if (!found) {
+                System.out.println("All Batches:");
+                found = true;
             }
+            System.out.println(batch);
         }
 
-        for (Trainer trainer : repository.trainers) {
-            if (trainer.getTrainer_id().equalsIgnoreCase(trainerId)) { // adjust if Trainer has getTrainer_id()
-                selectedTrainer = trainer;
-                break;
-            }
+        if (!found) {
+            System.out.println("No completed batches found.");
         }
-
-        if (selectedBatch == null) {
-            System.out.println("⚠️ Batch not found!");
-            return null;
-        }
-        if (selectedTrainer == null) {
-            System.out.println("⚠️ Trainer not found!");
-            return null;
-        }
-
-        selectedBatch.setTrainer(selectedTrainer);
-        System.out.println("✅ Trainer " + selectedTrainer.getFirst_name() +
-                           " assigned to Batch " + selectedBatch.getId());
-        return selectedBatch;
+        return;
     }
 }

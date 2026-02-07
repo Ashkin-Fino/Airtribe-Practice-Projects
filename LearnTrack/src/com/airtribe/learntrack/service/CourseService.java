@@ -6,7 +6,6 @@ import com.airtribe.learntrack.service.searchservice.CourseSearchService;
 import com.airtribe.learntrack.service.searchservice.Searchable;
 import com.airtribe.learntrack.ui.View;
 import com.airtribe.learntrack.utils.Utils;
-import java.util.List;
 
 public class CourseService {
     
