@@ -89,13 +89,20 @@ public class TrainerService {
 
     // 4. View All Trainers
     private void viewAllTrainers() {
-        if (repository.getTrainers().isEmpty()) {
-            System.out.println("No trainers available.");
-        } else {
-            System.out.println("List of all trainers:");
-            for (Trainer trainer : repository.getTrainers()) {
-                System.out.println(trainer);
+        
+        boolean found = false;
+
+        for (Trainer trainer : repository.getTrainers()) {
+            if (!found) {
+                System.out.println("All Trainers:");
+                found = true;
             }
+            System.out.println(trainer);
         }
+
+        if (!found) {
+            System.out.println("No trainers found.");
+        }
+        return;
     }
 }

@@ -75,7 +75,7 @@ public class StudentService {
         if (studentToDeactivate == null) {
             System.out.println("No student selected");
         } else {
-            System.out.println("Confirm deactivation of student:" + studentToDeactivate);
+            System.out.println("Deactivating student:" + studentToDeactivate);
             studentToDeactivate.setActive(false);
         }
         return;

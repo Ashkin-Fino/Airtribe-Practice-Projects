@@ -12,7 +12,7 @@ public class Course {
     private final String course_id;
     private String name;
     private List<EnrollmentMethod> enrollment_methods = new ArrayList<EnrollmentMethod>(List.of(EnrollmentMethod.fromString("ONLINE")));
-    private boolean is_active = true;
+    private boolean active = true;
     private String duration;
     private String description;
     
@@ -81,12 +81,12 @@ public class Course {
         }
     }
 
-    public boolean isIs_active() {
-        return is_active;
+    public boolean isActive() {
+        return active;
     }
 
-    public void setIs_active(boolean is_active) {
-        this.is_active = is_active;
+    public void setActive(boolean is_active) {
+        this.active = is_active;
     }
 
     public String getDuration() {
@@ -123,7 +123,7 @@ public class Course {
                 "course_id='" + course_id + '\'' +
                 ", name='" + name + '\'' +
                 ", enrollment_methods=" + enrollment_methods +
-                ", is_active=" + is_active +
+                ", is_active=" + active +
                 '}';
     }
 }

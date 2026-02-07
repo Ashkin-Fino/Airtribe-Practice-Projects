@@ -23,10 +23,10 @@ public class StudentSearchService implements Searchable<Student>{
         int userInput = Utils.getUserInput(1, 3);
         switch(userInput) {
             case 1:
-                result = this.searchStudentById();
+                result = this.searchById();
                 break;
             case 2:
-                result = this.searchStudentByName();
+                result = this.searchByName();
                 break;
             case 3:
                 System.out.println("Returning to Student Menu");
@@ -38,7 +38,7 @@ public class StudentSearchService implements Searchable<Student>{
         return result;
     }
 
-    private Student searchStudentById() {
+    private Student searchById() {
         System.out.println("Enter Student ID: ");
         String id = Utils.getStringInput(true);
     
@@ -53,7 +53,7 @@ public class StudentSearchService implements Searchable<Student>{
         return null;
     }
     
-    private Student searchStudentByName() {
+    private Student searchByName() {
         System.out.println("Enter Student Name: ");
         String name = Utils.getStringInput(true).toLowerCase();
     
