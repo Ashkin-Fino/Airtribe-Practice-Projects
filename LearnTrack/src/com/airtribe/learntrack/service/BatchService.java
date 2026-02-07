@@ -105,6 +105,15 @@ public class BatchService {
             System.out.println("Cancelling batch:" + batchToCancel);
             batchToCancel.setStatus("CANCELLED");
         }
+
+        System.out.println("Cancelling all enrollments in batch...");
+        for (Enrollment enrollment: repository.getEnrollments()) {
+            if (enrollment.getBatch().getId() == batchToCancel.getId()) {
+                enrollment.setStatus("CANCELLED");
+            }
+        }
+
+        System.out.println("Batch and all related enrollments cancelled.");
         return;
     }
 
