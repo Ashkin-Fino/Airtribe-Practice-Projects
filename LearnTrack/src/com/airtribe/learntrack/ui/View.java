@@ -98,7 +98,8 @@ public class View {
         System.out.println("|-5-- View Completed Batches");
         System.out.println("|-6-- Assign Trainer to Batch");
         System.out.println("|-7-- View all students in Batch");
-        System.out.println("|-8-- Back to Main Menu");
+        System.out.println("|-8-- View all Batches");
+        System.out.println("|-9-- Back to Main Menu");
         System.out.println("Enter your input: ");
     }
 

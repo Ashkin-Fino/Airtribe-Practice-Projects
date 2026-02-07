@@ -43,7 +43,7 @@ public class CourseSearchService implements Searchable<Course>{
         String id = Utils.getStringInput(true);
     
         for (Course course : repository.getCourses()) {
-            if (course.getCourse_id() == id) {
+            if (course.getCourse_id().equals(id)) {
                 System.out.println("Course found: " + course);
                 return course;
             }
@@ -61,7 +61,7 @@ public class CourseSearchService implements Searchable<Course>{
     
         for (Course course : repository.getCourses()) {
             String name = course.getName();
-            if (name.contains(searchName)) {
+            if (name.toLowerCase().contains(searchName.toLowerCase())) {
                 matchedCourses.add(course);
             }
         }
@@ -85,7 +85,8 @@ public class CourseSearchService implements Searchable<Course>{
     
         System.out.println("Select a Course:");
         int choice = Utils.getUserInput(1, matchedCourses.size());
-    
+        
+        System.out.println("Course found: " + matchedCourses.get(choice - 1));
         return matchedCourses.get(choice - 1);
     }      
 }

@@ -43,7 +43,7 @@ public class StudentSearchService implements Searchable<Student>{
         String id = Utils.getStringInput(true);
     
         for (Student student : repository.getStudents()) {
-            if (student.getId() == id) {
+            if (student.getId().equals(id)) {
                 System.out.println("Student found: " + student);
                 return student;
             }
@@ -61,7 +61,7 @@ public class StudentSearchService implements Searchable<Student>{
     
         for (Student student : repository.getStudents()) {
             String fullName = (student.getFirstName() + " " + student.getLastName()).toLowerCase();
-            if (fullName.contains(name)) {
+            if (fullName.toLowerCase().contains(name.toLowerCase())) {
                 matchedStudents.add(student);
             }
         }
@@ -85,7 +85,8 @@ public class StudentSearchService implements Searchable<Student>{
     
         System.out.println("Select a student:");
         int choice = Utils.getUserInput(1, matchedStudents.size());
-    
+        
+        System.out.println("Student found: " + matchedStudents.get(choice - 1));
         return matchedStudents.get(choice - 1);
     }      
 }

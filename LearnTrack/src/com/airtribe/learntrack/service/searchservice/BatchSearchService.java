@@ -35,7 +35,7 @@ public class BatchSearchService implements Searchable<Batch>{
                 result = this.searchByCourse();
                 break;
             case 4:
-                System.out.println("Returning to Course Menu");
+                System.out.println("Returning to Batch Menu");
                 break;
             default:
                 System.out.println("Invalid choice");
@@ -49,8 +49,8 @@ public class BatchSearchService implements Searchable<Batch>{
         String id = Utils.getStringInput(true);
     
         for (Batch batch : repository.getBatches()) {
-            if (batch.getId() == id) {
-                System.out.println("Bacth found: " + batch);
+            if (batch.getId().equals(id)) {
+                System.out.println("Batch found: " + batch);
                 return batch;
             }
         }
@@ -67,7 +67,7 @@ public class BatchSearchService implements Searchable<Batch>{
     
         for (Batch batch : repository.getBatches()) {
             String name = batch.getName();
-            if (name.contains(searchName)) {
+            if (name.toLowerCase().contains(searchName.toLowerCase())) {
                 matchedBatches.add(batch);
             }
         }
@@ -91,7 +91,8 @@ public class BatchSearchService implements Searchable<Batch>{
     
         System.out.println("Select a Batch:");
         int choice = Utils.getUserInput(1, matchedBatches.size());
-    
+        
+        System.out.println("Batch found: " + matchedBatches.get(choice - 1));
         return matchedBatches.get(choice - 1);
     }
 
@@ -99,10 +100,14 @@ public class BatchSearchService implements Searchable<Batch>{
         System.out.println("Select course to search batches:");
         Course course = courseSearchService.search();
 
+        if(course == null) {
+            return null;
+        }
+
         List<Batch> matchedBatches = new ArrayList<>();
     
         for (Batch batch : repository.getBatches()) {
-            if (batch.getCourse().getCourse_id() == course.getCourse_id()) {
+            if (batch.getCourse().getCourse_id().equals(course.getCourse_id())) {
                 matchedBatches.add(batch);
             }
         }
@@ -126,7 +131,8 @@ public class BatchSearchService implements Searchable<Batch>{
     
         System.out.println("Select a Batch:");
         int choice = Utils.getUserInput(1, matchedBatches.size());
-    
+        
+        System.out.println("Batch found: " + matchedBatches.get(choice - 1));
         return matchedBatches.get(choice - 1);
     }
 }

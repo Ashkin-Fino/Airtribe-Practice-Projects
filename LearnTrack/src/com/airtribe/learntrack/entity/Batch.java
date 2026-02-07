@@ -34,7 +34,7 @@ public class Batch {
     // Parameterized constructor with name, start date and course.
     public Batch(String name, LocalDate startDate, Course course) {
         this(course, name);
-        this.setStartDate(startDate);
+        this.startDate = startDate;
 
         // Calculate end_date based on course duration
         LocalDate calculatedEndDate = null;

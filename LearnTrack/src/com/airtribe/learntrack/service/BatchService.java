@@ -33,7 +33,7 @@ public class BatchService {
         boolean back = false;
         while (!back) {
             View.batchSubmenuView();
-            int userInput = Utils.getUserInput(1, 8);
+            int userInput = Utils.getUserInput(1, 9);
             switch (userInput) {
                 case 1:
                     this.addBatch();
@@ -108,7 +108,7 @@ public class BatchService {
 
         System.out.println("Cancelling all enrollments in batch...");
         for (Enrollment enrollment: repository.getEnrollments()) {
-            if (enrollment.getBatch().getId() == batchToCancel.getId()) {
+            if (enrollment.getBatch().getId().equals(batchToCancel.getId())) {
                 enrollment.setStatus("CANCELLED");
             }
         }
@@ -123,7 +123,7 @@ public class BatchService {
         boolean found = false;
 
         for (Batch batch : repository.getBatches()) {
-            if (batch.getStatus() == BatchStatus.ONGOING) {
+            if (batch.getStatus().equals(BatchStatus.ONGOING)) {
                 if (!found) {
                     System.out.println("Ongoing Batches:");
                     found = true;
@@ -144,7 +144,7 @@ public class BatchService {
         boolean found = false;
 
         for (Batch batch : repository.getBatches()) {
-            if (batch.getStatus() == BatchStatus.COMPLETED) {
+            if (batch.getStatus().equals(BatchStatus.COMPLETED)) {
                 if (!found) {
                     System.out.println("Completed Batches:");
                     found = true;
@@ -164,8 +164,18 @@ public class BatchService {
         System.out.println("Identify Batch to view students...");
         Batch batch = this.batchSearchService.search();
 
+        if (batch == null) {
+            System.out.println("Try again with a different batch.");
+            return;
+        }
+
         System.out.println("Select Trainer to add.");
         Trainer trainer = this.trainerSearchService.search();
+
+        if (trainer == null) {
+            System.out.println("Try again with a different trainer.");
+            return;
+        }
 
         batch.setTrainer(trainer);
         System.out.println("Assigned Trainer: " + trainer.getFullName() + 
@@ -178,10 +188,15 @@ public class BatchService {
         System.out.println("Identify Batch to view students...");
         Batch batchToViewStudents = this.batchSearchService.search();
 
+        if (batchToViewStudents == null) {
+            System.out.println("Try again with a different batch.");
+            return;
+        }
+
         boolean found = false;
 
         for (Enrollment enrollment: repository.getEnrollments()) {
-            if (enrollment.getBatch().getId() == batchToViewStudents.getId()) {
+            if (enrollment.getBatch().getId().equals(batchToViewStudents.getId())) {
                 if (!found) {
                     System.out.println("All Students in Batch: " + batchToViewStudents.getName());
                     found = true;
@@ -210,7 +225,7 @@ public class BatchService {
         }
 
         if (!found) {
-            System.out.println("No completed batches found.");
+            System.out.println("No batches found.");
         }
         return;
     }

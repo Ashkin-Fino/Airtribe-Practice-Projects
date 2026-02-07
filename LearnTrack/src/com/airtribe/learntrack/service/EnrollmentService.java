@@ -55,8 +55,16 @@ public class EnrollmentService {
         System.out.println("Identifying student...");
         Student student = this.studentSearchService.search();
 
+        if (student == null) {
+            System.out.println("Try again with a different student");
+        }
+
         System.out.println("Identifying batch...");
         Batch batch = this.batchSearchService.search();
+
+        if (batch == null) {
+            System.out.println("Try again with a different batch");
+        }
 
         try {
             Enrollment enrollment = new Enrollment(student, batch);
@@ -72,10 +80,14 @@ public class EnrollmentService {
         System.out.println("Select student whose enrollment should be cancelled... ");
         Student student = this.studentSearchService.search();
 
+        if (student == null) {
+            System.out.println("Try again with a different student");
+        }
+
         List<Enrollment> matchedEnrollments = new ArrayList<>();
 
         for (Enrollment enrollment: repository.getEnrollments()) {
-            if (enrollment.getStudent().getId() == student.getId()) {
+            if (enrollment.getStudent().getId().equals(student.getId())) {
                 matchedEnrollments.add(enrollment);
             }
         }
@@ -98,11 +110,12 @@ public class EnrollmentService {
         for (int i = 0; i < matchedEnrollments.size(); i++) {
             System.out.println((i + 1) + ". " + matchedEnrollments.get(i));
         }
-        System.out.println("Select a Enrollement:");
+        System.out.println("Select a Enrollement");
         int choice = Utils.getUserInput(1, matchedEnrollments.size());
         enrollmentToCancel = matchedEnrollments.get(choice - 1);
 
         enrollmentToCancel.setStatus("CANCELLED");
+        System.out.println("Enrollment cancelled successfully");
 
         return;
     }

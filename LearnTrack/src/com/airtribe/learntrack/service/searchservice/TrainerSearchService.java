@@ -46,7 +46,7 @@ public class TrainerSearchService implements Searchable<Trainer> {
         String id = Utils.getStringInput(true);
     
         for (Trainer trainer : repository.getTrainers()) {
-            if (trainer.getId() == id) {
+            if (trainer.getId().equals(id)) {
                 System.out.println("Trainer found: " + trainer);
                 return trainer;
             }
@@ -64,7 +64,7 @@ public class TrainerSearchService implements Searchable<Trainer> {
     
         for (Trainer trainer : repository.getTrainers()) {
             String fullName = (trainer.getFirstName() + " " + trainer.getLastName()).toLowerCase();
-            if (fullName.contains(name)) {
+            if (fullName.toLowerCase().contains(name.toLowerCase())) {
                 matchedTrainers.add(trainer);
             }
         }
@@ -88,7 +88,8 @@ public class TrainerSearchService implements Searchable<Trainer> {
     
         System.out.println("Select a trainer*:");
         int choice = Utils.getUserInput(1, matchedTrainers.size());
-    
+        
+        System.out.println("Trainer found: " + matchedTrainers.get(choice - 1));
         return matchedTrainers.get(choice - 1);
     }
 
@@ -99,7 +100,7 @@ public class TrainerSearchService implements Searchable<Trainer> {
         List<Trainer> matchedTrainers = new ArrayList<>();
     
         for (Trainer trainer : repository.getTrainers()) {
-            if (trainer.getSpecialisation().toLowerCase().contains(specialisation)) {
+            if (trainer.getSpecialisation().toLowerCase().contains(specialisation.toLowerCase())) {
                 matchedTrainers.add(trainer);
             }
         }
@@ -121,7 +122,8 @@ public class TrainerSearchService implements Searchable<Trainer> {
     
         System.out.println("Select a trainer:");
         int choice = Utils.getUserInput(1, matchedTrainers.size());
-    
+        
+        System.out.println("Trainer found: " + matchedTrainers.get(choice - 1));
         return matchedTrainers.get(choice - 1);
     }
     
