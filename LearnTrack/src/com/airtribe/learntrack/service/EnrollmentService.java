@@ -5,16 +5,28 @@ import com.airtribe.learntrack.entity.Course;
 import com.airtribe.learntrack.entity.Enrollment;
 import com.airtribe.learntrack.entity.Student;
 import com.airtribe.learntrack.repository.Repository;
+import com.airtribe.learntrack.service.searchservice.BatchSearchService;
+import com.airtribe.learntrack.service.searchservice.CourseSearchService;
+import com.airtribe.learntrack.service.searchservice.Searchable;
+import com.airtribe.learntrack.service.searchservice.StudentSearchService;
 import com.airtribe.learntrack.ui.View;
 import com.airtribe.learntrack.utils.Utils;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public class EnrollmentService {
 
     private final Repository repository;
+    private final Searchable<Batch> batchSearchService;
+    private final Searchable<Course> courseSearchService;
+    private final Searchable<Student> studentSearchService;
 
     public EnrollmentService(Repository repository) {
         this.repository = repository;
+        this.studentSearchService = new StudentSearchService(repository);
+        this.courseSearchService = new CourseSearchService(repository);
+        this.batchSearchService = new BatchSearchService(repository, courseSearchService);
     }
 
     public void menu() {
@@ -27,7 +39,7 @@ public class EnrollmentService {
                     this.addEnrollment();
                     break;
                 case 2:
-                    this.searchEnrollment();
+                    this.cancelEnrollment();
                     break;
                 case 3:
                     back = true;
@@ -39,92 +51,59 @@ public class EnrollmentService {
         }
     }
 
-    private Enrollment addEnrollment() {
-        System.out.println("Enter Student ID: ");
-        String studentId = Utils.getStringInput();
+    private void addEnrollment() {
+        System.out.println("Identifying student...");
+        Student student = this.studentSearchService.search();
 
-        System.out.println("Enter Course ID: ");
-        String courseId = Utils.getStringInput();
+        System.out.println("Identifying batch...");
+        Batch batch = this.batchSearchService.search();
 
-        System.out.println("Enter Batch ID: ");
-        String batchId = Utils.getStringInput();
-
-        Student selectedStudent = null;
-        Course selectedCourse = null;
-        Batch selectedBatch = null;
-
-        // Find student
-        for (Student s : repository.students) {
-            if (s.getStudent_id().equalsIgnoreCase(studentId)) {
-                selectedStudent = s;
-                break;
-            }
+        try {
+            Enrollment enrollment = new Enrollment(student, batch);
+            repository.addEnrollment(enrollment);
+            System.out.println("Enrollment added successfully: " + enrollment);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Couldn't create enrollment: " + e.toString());
         }
-
-        // Find course
-        for (Course c : repository.courses) {
-            if (c.getCourse_id().equalsIgnoreCase(courseId)) {
-                selectedCourse = c;
-                break;
-            }
-        }
-
-        // Find batch
-        for (Batch b : repository.batches) {
-            if (b.getId().equalsIgnoreCase(batchId)) {
-                selectedBatch = b;
-                break;
-            }
-        }
-
-        if (selectedStudent == null) {
-            System.out.println("⚠️ Student not found!");
-            return null;
-        }
-        if (selectedCourse == null) {
-            System.out.println("⚠️ Course not found!");
-            return null;
-        }
-        if (selectedBatch == null) {
-            System.out.println("⚠️ Batch not found!");
-            return null;
-        }
-
-        Enrollment enrollment = new Enrollment(selectedStudent, selectedCourse, selectedBatch);
-        repository.enrollments.add(enrollment);
-        System.out.println("✅ Enrollment added successfully: " + enrollment);
-        return enrollment;
+        return;
     }
 
-    // 2. Search Enrollment
-    private Enrollment searchEnrollment() {
-        System.out.println("Enter Enrollment ID: ");
-        String id = Utils.getStringInput();
+    private void cancelEnrollment() {
+        System.out.println("Select student whose enrollment should be cancelled... ");
+        Student student = this.studentSearchService.search();
 
-        for (Enrollment e : repository.enrollments) {
-            if (e.getEnrollment_id().equalsIgnoreCase(id)) {
-                System.out.println("🔍 Found: " + e);
-                return e;
+        List<Enrollment> matchedEnrollments = new ArrayList<>();
+
+        for (Enrollment enrollment: repository.getEnrollments()) {
+            if (enrollment.getStudent().getId() == student.getId()) {
+                matchedEnrollments.add(enrollment);
             }
         }
-        System.out.println("⚠️ Enrollment not found!");
-        return null;
-    }
 
-    // 3. Deactivate Enrollment
-    private Enrollment deactivateEnrollment() {
-        System.out.println("Enter Enrollment ID to deactivate: ");
-        String id = Utils.getStringInput();
-
-        for (Enrollment e : repository.enrollments) {
-            if (e.getEnrollment_id().equalsIgnoreCase(id)) {
-                e.setStatus("CANCELLED");
-                System.out.println("🚫 Enrollment deactivated: " + e);
-                return e;
-            }
+        if (matchedEnrollments.isEmpty()) {
+            System.out.println("Student has no enrollments.");
+            return;
         }
-        System.out.println("⚠️ Enrollment not found!");
-        return null;
-    }
 
+        Enrollment enrollmentToCancel;
+
+        // If only one Enrollment found
+        if (matchedEnrollments.size() == 1) {
+            System.out.println("Enrollment found: " + matchedEnrollments.get(0));
+            enrollmentToCancel = matchedEnrollments.get(0);
+        }
+    
+        // Multiple Enrollments found
+        System.out.println("Multiple Enrollments found:");
+        for (int i = 0; i < matchedEnrollments.size(); i++) {
+            System.out.println((i + 1) + ". " + matchedEnrollments.get(i));
+        }
+        System.out.println("Select a Enrollement:");
+        int choice = Utils.getUserInput(1, matchedEnrollments.size());
+        enrollmentToCancel = matchedEnrollments.get(choice - 1);
+
+        enrollmentToCancel.setStatus("CANCELLED");
+
+        return;
+    }
 }
