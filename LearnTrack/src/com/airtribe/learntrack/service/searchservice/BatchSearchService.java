@@ -22,8 +22,8 @@ public class BatchSearchService implements Searchable<Batch>{
     @Override
     public Batch search() {
         Batch result = null;
-        View.courseSearchSubmenuView();
-        int userInput = Utils.getUserInput(1, 3);
+        View.batchSearchSubmenuView();
+        int userInput = Utils.getUserInput(1, 4);
         switch(userInput) {
             case 1:
                 result = this.searchById();
