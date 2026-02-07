@@ -10,7 +10,7 @@ import com.airtribe.learntrack.constants.EnrollmentStatus;
  */
 public class Enrollment {
     private Student student;
-    private LocalDate registeredDate = LocalDate.now();
+    private LocalDate registeredDate;
     private EnrollmentStatus status = EnrollmentStatus.ACTIVE;
     private Batch batch;
     private final String enrollmentId;
@@ -25,12 +25,13 @@ public class Enrollment {
         this.enrollmentId = generateEnrollmentId();
         this.setStudent(student);
         this.setBatch(batch);
+        this.registeredDate = LocalDate.now();
     }
 
     // Parameterized constructor
     public Enrollment(Student student, Batch batch, LocalDate registeredDate) {
         this(student, batch);
-        this.setRegisteredDate(registeredDate);
+        this.registeredDate = registeredDate;
     }
 
     // Getters and Setters with validation
@@ -52,16 +53,6 @@ public class Enrollment {
 
     public LocalDate getRegisteredDate() {
         return registeredDate;
-    }
-
-    public void setRegisteredDate(LocalDate registeredDate) {
-        if (registeredDate == null) {
-            throw new IllegalArgumentException("Registered date cannot be null");
-        }
-        if (registeredDate.isAfter(LocalDate.now())) {
-            throw new IllegalArgumentException("Registered date cannot be in the future");
-        }
-        this.registeredDate = registeredDate;
     }
 
     public EnrollmentStatus getStatus() {

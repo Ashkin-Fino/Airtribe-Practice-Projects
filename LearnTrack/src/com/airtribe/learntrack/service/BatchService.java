@@ -3,6 +3,7 @@ package com.airtribe.learntrack.service;
 import com.airtribe.learntrack.constants.BatchStatus;
 import com.airtribe.learntrack.entity.Batch;
 import com.airtribe.learntrack.entity.Course;
+import com.airtribe.learntrack.entity.Enrollment;
 import com.airtribe.learntrack.entity.Trainer;
 import com.airtribe.learntrack.repository.Repository;
 import com.airtribe.learntrack.service.searchservice.BatchSearchService;
@@ -166,10 +167,23 @@ public class BatchService {
     // 7. View all students in batch
     private void viewAllStudentsInBatch() {
         System.out.println("Identify Batch to view students...");
-        // Batch batchToViewStudents = this.batchSearchService.search();
-        
-        //search enrollments. filter based on batch.
+        Batch batchToViewStudents = this.batchSearchService.search();
 
+        boolean found = false;
+
+        for (Enrollment enrollment: repository.getEnrollments()) {
+            if (enrollment.getBatch().getId() == batchToViewStudents.getId()) {
+                if (!found) {
+                    System.out.println("All Students in Batch: " + batchToViewStudents.getName());
+                    found = true;
+                }
+                System.out.println(enrollment.getStudent().toString());
+            }
+        }
+
+        if (!found) {
+            System.out.println("No students in batch: " + batchToViewStudents.getId());
+        }
         return;
     }
 
@@ -178,7 +192,6 @@ public class BatchService {
         
         boolean found = false;
 
-        System.out.println("All Batches:");
         for (Batch batch : repository.getBatches()) {
             if (!found) {
                 System.out.println("All Batches:");
