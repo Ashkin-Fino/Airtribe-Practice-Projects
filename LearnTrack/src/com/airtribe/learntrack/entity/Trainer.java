@@ -50,7 +50,7 @@ public class Trainer extends Person {
     @Override
     public String toString() {
         return "Trainer{" +
-                ", is_active=" + active +
+                "is_active=" + active +
                 ", specialisation='" + specialisation + '\'' +
                 ", " + super.toString() +
                 '}';

@@ -58,10 +58,13 @@ public class StudentService {
         System.out.println("Enter Age*: ");
         int age = Utils.getIntInput(true);
 
-        Student student = new Student(firstName, lastName, email, age);
-        repository.addStudent(student);
-
-        System.out.println("Student added successfully: " + student.toString());
+        try {
+            Student student = new Student(firstName, lastName, email, age);
+            repository.addStudent(student);
+            System.out.println("Student added successfully: " + student.toString());
+        } catch (Exception e) {
+            System.out.println("Couldn't add Student. Please try again:" + e.toString());
+        }
         return;
     }
 
@@ -71,10 +74,10 @@ public class StudentService {
 
         if (studentToDeactivate == null) {
             System.out.println("No student selected");
+        } else {
+            System.out.println("Confirm deactivation of student:" + studentToDeactivate);
+            studentToDeactivate.setActive(false);
         }
-
-        System.out.println("Confirm deactivation of student:" + studentToDeactivate);
-        studentToDeactivate.setActive(false);
         return;
     }
 

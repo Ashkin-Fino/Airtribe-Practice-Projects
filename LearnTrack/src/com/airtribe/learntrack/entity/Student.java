@@ -34,7 +34,7 @@ public class Student extends Person {
     @Override
     public String toString() {
         return "Student{" +
-                ", is_active=" + this.active +
+                "is_active=" + this.active +
                 ", " + super.toString() +
                 '}';
     }

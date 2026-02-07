@@ -16,6 +16,7 @@ public class StudentSearchService implements Searchable<Student>{
         this.repository = repository;
     }
 
+    @Override
     public Student search() {
         Student result = null;
         View.studentSearchSubmenuView();
@@ -26,6 +27,9 @@ public class StudentSearchService implements Searchable<Student>{
                 break;
             case 2:
                 result = this.searchStudentByName();
+                break;
+            case 3:
+                System.out.println("Returning to Student Menu");
                 break;
             default:
                 System.out.println("Invalid choice");
