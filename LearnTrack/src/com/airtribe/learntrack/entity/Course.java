@@ -1,8 +1,5 @@
 package com.airtribe.learntrack.entity;
 
-import com.airtribe.learntrack.constants.EnrollmentMethod;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 /**
@@ -11,7 +8,6 @@ import java.util.UUID;
 public class Course {
     private final String course_id;
     private String name;
-    private List<EnrollmentMethod> enrollment_methods = new ArrayList<EnrollmentMethod>(List.of(EnrollmentMethod.fromString("ONLINE")));
     private boolean active = true;
     private String duration;
     private String description;
@@ -27,12 +23,6 @@ public class Course {
         this.course_id = generateCourseId();
         this.setName(name);
         this.setDuration(duration);
-    }
-
-    // Parameterized constructor with name, duration and enrollment methods
-    public Course(String name, List<String> enrollment_methods, String duration) {
-        this(name, duration);
-        this.setEnrollment_methods(enrollment_methods);
     }
 
     // Getters and Setters with validation
@@ -52,33 +42,6 @@ public class Course {
             throw new IllegalArgumentException("Course name cannot exceed 100 characters");
         }
         this.name = name.trim();
-    }
-
-    public List<EnrollmentMethod> getEnrollment_methods() {
-        return new ArrayList<>(enrollment_methods); // Return a copy to prevent external modification
-    }
-
-    public void setEnrollment_methods(List<String> enrollment_methods) {
-        if (enrollment_methods == null) {
-            throw new IllegalArgumentException("Enrollment methods cannot be null");
-        }
-        this.enrollment_methods = new ArrayList<>();
-        for (String method : enrollment_methods) {
-            addEnrollmentMethod(method);
-        }
-    }
-
-    public void addEnrollmentMethod(String method) {
-        EnrollmentMethod enrollmentMethod = EnrollmentMethod.fromString(method);
-        if (!this.enrollment_methods.contains(enrollmentMethod)) {
-            this.enrollment_methods.add(enrollmentMethod);
-        }
-    }
-
-    public void removeEnrollmentMethod(String method) {
-        if (method != null) {
-            this.enrollment_methods.remove(EnrollmentMethod.fromString(method.toUpperCase().trim()));
-        }
     }
 
     public boolean isActive() {
@@ -122,7 +85,6 @@ public class Course {
         return "Course{" +
                 "course_id='" + course_id + '\'' +
                 ", name='" + name + '\'' +
-                ", enrollment_methods=" + enrollment_methods +
                 ", is_active=" + active +
                 '}';
     }

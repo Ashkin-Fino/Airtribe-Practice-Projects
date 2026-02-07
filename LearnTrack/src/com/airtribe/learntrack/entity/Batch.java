@@ -1,7 +1,6 @@
 package com.airtribe.learntrack.entity;
 
 import com.airtribe.learntrack.constants.BatchStatus;
-import com.airtribe.learntrack.constants.EnrollmentMethod;
 import java.time.LocalDate;
 import java.util.UUID;
 import java.util.regex.Matcher;
@@ -16,7 +15,6 @@ public class Batch {
     private LocalDate startDate;
     private LocalDate endDate;
     private BatchStatus status = BatchStatus.UPCOMING;
-    private EnrollmentMethod enrollmentType;
     private final Course course;
     private Trainer trainer;
 
@@ -113,14 +111,6 @@ public class Batch {
 
     public Course getCourse() {
         return course;
-    }
-
-    public EnrollmentMethod getEnrollmentType() {
-        return enrollmentType;
-    }
-
-    public void setEnrollmentType(String enrollmentType) {
-        this.enrollmentType = EnrollmentMethod.fromString(enrollmentType);
     }
 
     /**

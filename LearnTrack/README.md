@@ -1,17 +1,58 @@
 1. Project Description:
 
-LearnTrack is a console-based Learner Management System developed in Java.
-The application allows management of Students, Trainers, Courses, Batches, and Enrollments using an in-memory repository.
+    LearnTrack is a console-based Learner Management System developed in Java. The application allows management of Students, Trainers, Courses, Batches, and Enrollments using an in-memory repository.
 
-The system provides functionality to:
-    1. Add, search, and deactivate Students and Trainers
-    2. Create Courses and Batches
-    3. Enroll Students into Batches
-    4. View lists such as all students, trainers, courses, and ongoing batches
+    The system provides functionality to:
 
-The project is designed following basic Object-Oriented Programming principles such as encapsulation, inheritance, modular services, and repository-based storage.
+        1. Add, search, and deactivate Students and Trainers
+        2. Create Courses and Batches
+        3. Enroll Students into Batches
+        4. View lists such as all students, trainers, courses, and ongoing batches
+
+    The project is designed following basic Object-Oriented Programming principles such as encapsulation, inheritance, modular services, and repository-based storage.
 
 2. Package and Class Structure:
+
+    ├──src\com.airtribe.learntrack
+    │      ├── constants
+    │      │   └── BatchStatus.java
+    │      │   └── EnrollmentStatus.java
+    │      ├── docs
+    │      │   └── DesignNotes.md
+    │      │   └── Helloworld Program Screenshot.png
+    │      │   └── JVM_basics.md
+    │      │   └── Setup_Instructions.md
+    │      ├── entity
+    │      │   └── Person.java
+    │      │   └── Student.java
+    │      │   └── Trainer.java
+    │      │   └── Course.java
+    │      │   └── Batch.java
+    │      │   └── Enrollment.java
+    │      ├── exceptions
+    │      │   └── EmptyValueException.java
+    │      ├── repository
+    │      │   └── Repository.java
+    │      ├── service
+    │      │   └── searchservice
+    │      │   │   └── Searchable.java
+    │      │   │   └── StudentSearchService.java
+    │      │   │   └── TrainerSearchService.java
+    │      │   │   └── CourseSearchService.java
+    │      │   │   └── BatchSearchService.java
+    │      │   └── StudentService.java
+    │      │   └── TrainerService.java
+    │      │   └── CourseService.java
+    │      │   └── BatchService.java
+    │      │   └── EnrollmentService.java
+    │      │   └── LearnTrackService.java
+    │      ├── ui
+    │      │   └── Views.java
+    │      ├── utils
+    │      │   └── Utils.java
+    │      └── Main.java
+    └── manifest.txt
+    └── Readme.md
 
 3. How to run the application:
 
@@ -25,4 +66,5 @@ The project is designed following basic Object-Oriented Programming principles s
     
     Or instead of step 3, you can create a executable jar and run it.
 
-    
+
+AUTHOR: Ashkin Fino. R
