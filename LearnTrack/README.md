@@ -1,4 +1,4 @@
-1. Project Description:
+Project Description:
 
     LearnTrack is a console-based Learner Management System developed in Java. The application allows management of Students, Trainers, Courses, Batches, and Enrollments using an in-memory repository.
 
@@ -11,7 +11,7 @@
 
     The project is designed following basic Object-Oriented Programming principles such as encapsulation, inheritance, modular services, and repository-based storage.
 
-2. Package and Class Structure:
+Package and Class Structure:
 
     ├──src\com.airtribe.learntrack
     │      ├── constants
@@ -54,7 +54,7 @@
     └── manifest.txt
     └── Readme.md
 
-3. How to run the application:
+How to run the application:
 
     Step 1: Clone the repository to your local device.
 
@@ -67,4 +67,6 @@
     Or instead of step 3, you can create a executable jar and run it.
 
 
-AUTHOR: Ashkin Fino. R
+Author:
+
+    Ashkin Fino. R
