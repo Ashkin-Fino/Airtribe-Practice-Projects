@@ -60,8 +60,12 @@ public class Utils {
                 number = null;
                 break;
             } else {
-                number = Integer.parseInt(input); 
-                break;
+                try {
+                    number = Integer.parseInt(input);
+                    break;
+                } catch (NumberFormatException e) {
+                    System.out.println("Enter a number. Not a string.");
+                }
             }
         }
         return number;

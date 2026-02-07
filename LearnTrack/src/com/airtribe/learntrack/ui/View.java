@@ -62,13 +62,30 @@ public class View {
         System.out.println("Enter your input: ");
     }
 
+    public static void trainerSearchSubmenuView() {
+        System.out.println("Trainer Search");
+        System.out.println("|-1--Search by ID");
+        System.out.println("|-2--Search by Name");
+        System.out.println("|-3--Search by specialisation");
+        System.out.println("|-4--Back to Main Menu");
+        System.out.println("Enter your input: ");
+    }
+
     public static void courseSubmenuView() {
         System.out.println("Course Management");
         System.out.println("|-1-- Add Course");
         System.out.println("|-2-- Search Course");
-        System.out.println("|-3--Deactivate Course");
+        System.out.println("|-3-- Deactivate Course");
         System.out.println("|-4-- View All Courses");
         System.out.println("|-5-- Back to Main Menu");
+        System.out.println("Enter your input: ");
+    }
+
+    public static void courseSearchSubmenuView() {
+        System.out.println("Course Search");
+        System.out.println("|-1--Search by ID");
+        System.out.println("|-2--Search by Name");
+        System.out.println("|-3--Back to Main Menu");
         System.out.println("Enter your input: ");
     }
 
@@ -82,6 +99,15 @@ public class View {
         System.out.println("|-6-- Assign Trainer to Batch");
         System.out.println("|-7-- View all students in Batch");
         System.out.println("|-8-- Back to Main Menu");
+        System.out.println("Enter your input: ");
+    }
+
+    public static void batchSearchSubmenuView() {
+        System.out.println("Batch Search");
+        System.out.println("|-1--Search by ID");
+        System.out.println("|-2--Search by Name");
+        System.out.println("|-3--Search by Course");
+        System.out.println("|-4--Back to Main Menu");
         System.out.println("Enter your input: ");
     }
 
