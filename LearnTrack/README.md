@@ -1,18 +1,28 @@
-## Getting Started
+1. Project Description:
 
-Welcome to the VS Code Java world. Here is a guideline to help you get started to write Java code in Visual Studio Code.
+LearnTrack is a console-based Learner Management System developed in Java.
+The application allows management of Students, Trainers, Courses, Batches, and Enrollments using an in-memory repository.
 
-## Folder Structure
+The system provides functionality to:
+    1. Add, search, and deactivate Students and Trainers
+    2. Create Courses and Batches
+    3. Enroll Students into Batches
+    4. View lists such as all students, trainers, courses, and ongoing batches
 
-The workspace contains two folders by default, where:
+The project is designed following basic Object-Oriented Programming principles such as encapsulation, inheritance, modular services, and repository-based storage.
 
-- `src`: the folder to maintain sources
-- `lib`: the folder to maintain dependencies
+2. Package and Class Structure:
 
-Meanwhile, the compiled output files will be generated in the `bin` folder by default.
+3. How to run the application:
 
-> If you want to customize the folder structure, open `.vscode/settings.json` and update the related settings there.
+    Step 1: Clone the repository to your local device.
 
-## Dependency Management
+    Step 2: Use the following command to compile all .java files to .class files and place it inside bin folder.
+        javac -d bin src/com/airtribe/learntrack/**/*.java
 
-The `JAVA PROJECTS` view allows you to manage your dependencies. More details can be found [here](https://github.com/microsoft/vscode-java-dependency#manage-dependencies).
+    Step 3: Then use the following command to run the compiled Main.class file.
+        java -cp bin com.airtribe.learntrack.Main
+    
+    Or instead of step 3, you can create a executable jar and run it.
+
+    
