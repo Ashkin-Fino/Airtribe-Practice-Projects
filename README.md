@@ -1,2 +1,2 @@
-# Airtribe-HomeWorks-And-Projects
+# Airtribe-Projects
 Created to track airtribe java projects.
