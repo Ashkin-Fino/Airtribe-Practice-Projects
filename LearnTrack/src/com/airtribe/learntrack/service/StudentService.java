@@ -63,7 +63,7 @@ public class StudentService {
             repository.addStudent(student);
             System.out.println("Student added successfully: " + student.toString());
         } catch (Exception e) {
-            System.out.println("Couldn't add Student. Please try again:" + e.toString());
+            System.out.println("Couldn't add Student. Please try again:" + e.getMessage());
         }
         return;
     }
@@ -78,6 +78,7 @@ public class StudentService {
             System.out.println("Deactivating student:" + studentToDeactivate);
             studentToDeactivate.setActive(false);
         }
+        repository.modfiyExistingStudent(studentToDeactivate);
         return;
     }
 

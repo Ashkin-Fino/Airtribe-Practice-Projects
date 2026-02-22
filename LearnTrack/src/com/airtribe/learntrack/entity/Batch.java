@@ -47,7 +47,7 @@ public class Batch {
         LocalDate currentDate = LocalDate.now();
         if (startDate.isBefore(currentDate) && calculatedEndDate.isBefore(currentDate)) {
             this.setStatus("COMPLETED");
-        } else if (startDate.isBefore(currentDate) || startDate.isEqual(currentDate)) {
+        } else if (startDate.compareTo(currentDate)<=0) {
             this.setStatus("ONGOING");
         } else {
             this.setStatus("UPCOMING");
@@ -79,12 +79,14 @@ public class Batch {
     }
 
     public void setStartDate(LocalDate startDate) {
-        if (startDate == null) {
-            throw new IllegalArgumentException("Start date cannot be null");
-        } else if (startDate.isAfter(this.endDate)) {
-            throw new IllegalArgumentException("Course already ended");
-        } else if (startDate.isAfter(this.startDate)) {
-            throw new IllegalArgumentException("Course already started");
+        if(this.startDate != null && this.endDate != null) {
+            if (startDate == null) {
+                throw new IllegalArgumentException("Start date cannot be null");
+            } else if (startDate.isAfter(this.endDate)) {
+                throw new IllegalArgumentException("Course already ended");
+            } else if (startDate.isAfter(this.startDate) && this.startDate.isBefore(LocalDate.now())) {
+                throw new IllegalArgumentException("Course already started");
+            }
         }
         this.startDate = startDate;
         this.setEndDate(calculateEndDate(startDate, course.getDuration()));

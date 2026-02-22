@@ -44,6 +44,18 @@ public class Repository {
     }
 
     /*
+    Modifies the existing student based on same id.
+    */
+    public void modfiyExistingStudent(Student student) {
+        for (Student originalStudent : this.students) {
+            if (originalStudent.getId().equals(student.getId())) {
+                this.students.remove(originalStudent);
+            }
+        }
+        this.addStudent(student);
+    }
+
+    /*
     Returns a copy of the list of Trainers.
     */
     public List<Trainer> getTrainers() {

@@ -75,11 +75,11 @@ public class TrainerService {
 
     // 3. Deactivate Trainer
     private void deactivateTrainer() {
-        System.out.println("Identify Student to deactivate...");
+        System.out.println("Identify Trainer to deactivate...");
         Trainer trainerToDeactivate = this.trainerSearchService.search();
 
         if (trainerToDeactivate == null) {
-            System.out.println("No student selected");
+            System.out.println("No trainer selected");
         } else {
             System.out.println("Deactivating Trainer:" + trainerToDeactivate);
             trainerToDeactivate.setActive(false);

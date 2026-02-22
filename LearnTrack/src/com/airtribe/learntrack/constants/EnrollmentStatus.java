@@ -14,13 +14,16 @@ public enum EnrollmentStatus {
      * @throws IllegalArgumentException if the string is not a valid enrollment status
      */
     public static EnrollmentStatus fromString(String status) {
-        if (status == null || status.trim().isEmpty()) {
-            throw new IllegalArgumentException("Enrollment status cannot be null or empty");
+        if (status == null) {
+            throw new IllegalArgumentException("Enrollment status cannot be null.");
+        }
+        if (status.trim().isEmpty()) {
+            throw new IllegalArgumentException("Enrollment status cannot be empty.");
         }
         try {
             return valueOf(status.trim().toUpperCase());
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Invalid enrollment status. Must be one of: " + 
+            throw new IllegalArgumentException("Invalid enrollment status: '"+ status + "'. Must be one of: " + 
             getValidStatusesString());
         }
     }
