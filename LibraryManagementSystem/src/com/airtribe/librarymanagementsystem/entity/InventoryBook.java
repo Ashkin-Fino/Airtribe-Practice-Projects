@@ -4,18 +4,38 @@ import com.airtribe.librarymanagementsystem.enums.InventoryBookStatus;
 
 public class InventoryBook {
 
-    private String id;
-    private Book book;
+    private final String id;
+    private final Book book;
     private String location;
     private InventoryBookStatus status;
 
-    public InventoryBook(String id, Book book, String location) {
+    public InventoryBook(Book book) {
+        /*
+        Parameterized constructor with Book only.
+        */
+        this.id = generateId(book);
+        this.book = book;
+        this.status = InventoryBookStatus.AVAILABLE;
+    }
 
-        this.id = id;
+    public InventoryBook(Book book, String location) {
+        /*
+        Parameterized constructor with Book and location.
+        */
+        this.id = generateId(book);
         this.book = book;
         this.location = location;
         this.status = InventoryBookStatus.AVAILABLE;
     }
+
+    private String generateId(Book book) {
+        /*
+        Generates an ID using isbn of book and a counter.
+        */
+        return "STOCK_" + book.getIsbn() + "_" + book.getTotalStock();
+    }
+
+    // Getters and Setters
 
     public String getId() {
         return id;
@@ -31,14 +51,6 @@ public class InventoryBook {
 
     public InventoryBookStatus getStatus() {
         return status;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public void setBook(Book book) {
-        this.book = book;
     }
 
     public void setLocation(String location) {

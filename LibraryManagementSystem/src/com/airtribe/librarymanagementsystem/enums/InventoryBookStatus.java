@@ -4,5 +4,4 @@ public enum InventoryBookStatus {
 
     AVAILABLE,
     LENT,
-    RESERVED
 }

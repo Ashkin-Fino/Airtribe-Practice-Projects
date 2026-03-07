@@ -2,18 +2,27 @@ package com.airtribe.librarymanagementsystem.entity;
 
 public class Patron {
 
-    private String id;
+    private final String id;
     private String name;
     private String address;
     private String email;
     private int age;
-
     private int borrowedBooksCount;
 
-    public Patron(String id, String name, String address,
-                  String email, int age) {
+    public Patron(String name) {
+        /*
+        Parameterized constructor with name only.
+        */
+        this.id = generateUUID();
+        this.name = name;
+        this.borrowedBooksCount = 0;
+    }
 
-        this.id = id;
+    public Patron(String name, String address, String email, int age) {
+        /*
+        Parameterized constructor with name, address, email and age.
+        */
+        this.id = generateUUID();
         this.name = name;
         this.address = address;
         this.email = email;
@@ -21,18 +30,19 @@ public class Patron {
         this.borrowedBooksCount = 0;
     }
 
+    private String generateUUID() {
+        /*
+        Generates unique ID using UUID.
+        */
+        return "PAT_" + java.util.UUID.randomUUID().toString();
+    }
+
+    
     public boolean canBorrow() {
         return borrowedBooksCount < 5;
     }
 
-    public void incrementBorrowedBooks() {
-        borrowedBooksCount++;
-    }
-
-    public void decrementBorrowedBooks() {
-        borrowedBooksCount--;
-    }
-
+    // Getters and Setters
     public String getId() {
         return id;
     }
@@ -57,10 +67,6 @@ public class Patron {
         return borrowedBooksCount;
     }
 
-    public void setId(String id) {
-        this.id = id;
-    }
-
     public void setName(String name) {
         this.name = name;
     }
@@ -73,7 +79,15 @@ public class Patron {
         this.email = email;
     }
 
-    public void setAge(int age) {
-        this.age = age;
+    public void setAge(int age) throws IllegalArgumentException {
+        if (age >= 8) {
+            this.age = age;
+        } else {
+            throw new IllegalArgumentException("Minimum age for patron is 8");
+        }
+    }
+
+    public void setBorrowedBooksCount(int count) {
+        this.borrowedBooksCount = count;
     }
 }

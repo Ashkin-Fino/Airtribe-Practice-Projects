@@ -3,6 +3,7 @@ package com.airtribe.librarymanagementsystem.repository;
 import java.util.*;
 
 import com.airtribe.librarymanagementsystem.entity.Branch;
+import com.airtribe.librarymanagementsystem.entity.InventoryBook;
 
 public class BranchRepository {
 
@@ -24,4 +25,14 @@ public class BranchRepository {
         branches.remove(id);
     }
 
+    public InventoryBook getInventoryBookById(String inventoryBookId) {
+        for (Branch branch : branches.values()) {
+            for (InventoryBook inventoryBook : branch.getStock()) {
+                if (inventoryBook.getId().equals(inventoryBookId)) {
+                    return inventoryBook;
+                }
+            }
+        }
+        return null;
+    }
 }

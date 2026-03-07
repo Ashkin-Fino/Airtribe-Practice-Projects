@@ -6,23 +6,34 @@ import java.util.List;
 public class Branch {
 
     private String name;
-    private String id;
+    private final String id;
     private String address;
     private List<InventoryBook> stock;
 
-    public Branch(String name, String id, String address) {
-
+    public Branch(String name, String address) {
+        /*
+        Parameterized constructor with name and address.
+        */
         this.name = name;
-        this.id = id;
+        this.id = generateId();
         this.address = address;
         this.stock = new ArrayList<>();
     }
+    
+    private String generateId() {
+        /*
+        Generates id using UUID.
+        */
+        return "BRANCH_" + java.util.UUID.randomUUID();
+    }
 
+    // Getters and Setters
+    
     public void restockBook(InventoryBook book) {
         stock.add(book);
     }
 
-    public void removeBook(InventoryBook book) {
+    public void discardBook(InventoryBook book) {
         stock.remove(book);
     }
 
@@ -39,15 +50,11 @@ public class Branch {
     }
 
     public List<InventoryBook> getStock() {
-        return new ArrayList<>(stock); // defensive copy
+        return new ArrayList<>(stock);
     }
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 
     public void setAddress(String address) {
