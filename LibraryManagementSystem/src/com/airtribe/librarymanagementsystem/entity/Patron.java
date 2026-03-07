@@ -90,4 +90,16 @@ public class Patron {
     public void setBorrowedBooksCount(int count) {
         this.borrowedBooksCount = count;
     }
+
+    @Override
+    public String toString() {
+        return "Patron{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", address='" + address + '\'' +
+                ", email='" + email + '\'' +
+                ", age=" + age +
+                ", borrowedBooksCount=" + borrowedBooksCount +
+                '}';
+    }
 }

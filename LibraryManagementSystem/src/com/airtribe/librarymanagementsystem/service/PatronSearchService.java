@@ -35,11 +35,11 @@ public class PatronSearchService implements Searchable<Patron> {
             switch (role) {
                 case 1:
                     System.out.println("Enter Id:");
-                    String id = scanner.nextLine().toString();
+                    String id = scanner.next().toString();
                     return searchById(id);
                 case 2:
                     System.out.println("Enter Name:");
-                    String name = scanner.nextLine().toString();
+                    String name = scanner.next().toString();
                     return searchByName(name);
                 case 3:
                     return null;
@@ -61,7 +61,7 @@ public class PatronSearchService implements Searchable<Patron> {
        
         Patron patron = patronRepository.getPatronById(id);
         if (patron == null) {
-            System.out.println("Patron not found.");
+            System.out.println("No patron found with the given id.");
             return null;
         }
         return patron;
@@ -81,7 +81,7 @@ public class PatronSearchService implements Searchable<Patron> {
         }
 
         if (matches.isEmpty()) {
-            System.out.println("No patrons found with that name.");
+            System.out.println("No patron found with the given name.");
             return null;
         }
         if (matches.size() == 1) {

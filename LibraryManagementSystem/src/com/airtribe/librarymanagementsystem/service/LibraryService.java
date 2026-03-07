@@ -15,6 +15,7 @@ import com.airtribe.librarymanagementsystem.notification.NotificationStrategy;
 import com.airtribe.librarymanagementsystem.observer.PatronObserver;
 import com.airtribe.librarymanagementsystem.repository.BookRepository;
 import com.airtribe.librarymanagementsystem.repository.BranchRepository;
+import com.airtribe.librarymanagementsystem.repository.PatronRepository;
 import com.airtribe.librarymanagementsystem.repository.ReservationRepository;
 
 public class LibraryService {
@@ -24,11 +25,12 @@ public class LibraryService {
     private ReservationRepository reservationRepository;
     private InventoryService inventoryService;
     private Searchable<Book> bookSearchService;
+    private PatronRepository patronRepository;
     private Scanner scanner;
 
     public LibraryService(BookRepository bookRepository, BranchRepository branchRepository,
                     ReservationRepository reservationRepository, InventoryService inventoryService,
-                    Searchable<Book> bookSearchService, Scanner scanner) {
+                    PatronRepository pr, Searchable<Book> bookSearchService, Scanner scanner) {
         /*
         Parameterized constructor with BookRepository, BranchRepository, ReservationRepository,
         InventoryService, PatronSearchService and BookSearchService
@@ -36,6 +38,7 @@ public class LibraryService {
         this.bookRepository = bookRepository;
         this.branchRepository = branchRepository;
         this.reservationRepository = reservationRepository;
+        this.patronRepository = pr;
         this.inventoryService = inventoryService;
         this.bookSearchService = bookSearchService;
         this.scanner = scanner;
@@ -175,14 +178,14 @@ public class LibraryService {
         */
         Book book = bookSearchService.search();
         if (book == null) {
-            System.out.println("Book not found.");
+            System.out.println("Returning to Main menu");
             return;
         }
         System.out.println("Enter branch ID:");
         String branchId = scanner.next();
         Branch branch = branchRepository.getBranchById(branchId);
         if (branch == null) {
-            System.out.println("Branch not found.");
+            System.out.println("Branch not found. Returning to Main menu.");
             return;
         }
         System.out.println("Enter quantity to restock:");
@@ -246,7 +249,7 @@ public class LibraryService {
         String location = scanner.next();
         Branch branch = new Branch(name, location);
         branchRepository.addBranch(branch);
-        System.out.println("Branch created successfully.");
+        System.out.println("Branch created successfully: " + branch.toString());
     }
 
     public void closeBranch() {
@@ -259,5 +262,26 @@ public class LibraryService {
         /*
             to be implemented
         */
+    }
+
+    public void createPatron() {
+        /*
+            This method handles the process of creating a new patron. It prompts the administrator 
+            for patron details, creates a new patron object, and displays the created 
+            patron information.
+        */
+        System.out.println("Enter patron name:");
+        String name = scanner.next();
+        System.out.println("Enter patron email:");
+        String email = scanner.next();
+        System.out.println("Enter patron address:");
+        String address = scanner.next();
+        System.out.println("Enter patron age:");
+        int age = scanner.nextInt();
+        Patron patron = new Patron(name, address, email, age);
+
+        System.out.println("Patron created successfully: " + patron.toString());
+
+        patronRepository.addPatron(patron);
     }
 }

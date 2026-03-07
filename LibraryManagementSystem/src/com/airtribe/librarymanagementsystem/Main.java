@@ -40,7 +40,8 @@ public class Main {
         InventoryService inventoryService = new InventoryService(branchRepository);
 
         LibraryService libraryService = new LibraryService(bookRepository, branchRepository, 
-                        reservationRepository, inventoryService, bookSearchService, scanner);
+                        reservationRepository, inventoryService, patronRepository, 
+                        bookSearchService, scanner);
 
         while (true) {
             uiHelper.mainMenu();
@@ -50,6 +51,7 @@ public class Main {
             switch (role) {
                 case 1:
                     patronMenu(scanner, patronSearchService, bookSearchService, libraryService, uiHelper);
+                    break;
                 case 2:
                     adminMenu(scanner, libraryService, uiHelper, inventoryService);
                     break;
@@ -91,12 +93,15 @@ public class Main {
                     System.out.println("Found the requested book:");
                     System.out.println(book.toString());
                     retryCount = 0;
+                    break;
                 case 2:
                     libraryService.lendBook(patron);
                     retryCount = 0;
+                    break;
                 case 3:
                     libraryService.returnBook(patron);
                     retryCount = 0;
+                    break;
                 case 4:
                     System.out.println("Returning to Main Menu...");
                     return;
@@ -135,27 +140,38 @@ public class Main {
                 case 1:
                     libraryService.addNewBook();
                     retryCount = 0;
+                    break;
                 case 2:
                     libraryService.restockBook();
                     retryCount = 0;
+                    break;
                 case 3:
                     libraryService.discardBook();
                     retryCount = 0;
+                    break;
                 case 4:
                     libraryService.createBranch();
                     retryCount = 0;
+                    break;
                 case 5:
                     libraryService.closeBranch();
                     retryCount = 0;
+                    break;
                 case 6:
                     System.out.println("Enter Branch Id:");
                     String input = scanner.nextLine().toString();
                     inventoryService.generateInventoryReport(input);
                     retryCount = 0;
+                    break;
                 case 7:
                     libraryService.migrateStocks();
                     retryCount = 0;
+                    break;
                 case 8:
+                    libraryService.createPatron();
+                    retryCount = 0;
+                    break;
+                case 9:
                     System.out.println("Returning to Main Menu...");
                     return;
                 default:

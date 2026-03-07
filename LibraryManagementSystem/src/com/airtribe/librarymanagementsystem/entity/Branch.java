@@ -60,4 +60,9 @@ public class Branch {
     public void setAddress(String address) {
         this.address = address;
     }
+
+    @Override
+    public String toString() {
+        return "Branch Name: " + name + ", Branch Id: " + id + ", Address: " + address;
+    }
 }

@@ -34,11 +34,11 @@ public class BookSearchService implements Searchable<Book> {
             switch (role) {
                 case 1:
                     System.out.println("Enter Id:");
-                    String id = scanner.nextLine().toString();
+                    String id = scanner.next().toString();
                     return searchById(id);
                 case 2:
                     System.out.println("Enter Name:");
-                    String name = scanner.nextLine().toString();
+                    String name = scanner.next().toString();
                     return searchByName(name);
                 case 3:
                     return null;
@@ -61,7 +61,7 @@ public class BookSearchService implements Searchable<Book> {
         Book book = bookRepository.getBookByIsbn(id);
 
         if (book == null) {
-            System.out.println("Book not found.");
+            System.out.println("No book found with the id: " + id);
             return null;
         }
         return book;
@@ -81,7 +81,7 @@ public class BookSearchService implements Searchable<Book> {
         }
 
         if (matches.isEmpty()) {
-            System.out.println("No books found with that name.");
+            System.out.println("No books found with the name: " + name);
             return null;
         }
         if (matches.size() == 1) {

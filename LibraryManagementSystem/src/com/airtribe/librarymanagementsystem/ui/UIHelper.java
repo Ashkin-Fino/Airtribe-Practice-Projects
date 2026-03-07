@@ -43,7 +43,8 @@ public class UIHelper {
         System.out.println("║ 5. Close a branch                ║");
         System.out.println("║ 6. Generate stock report         ║");
         System.out.println("║ 7. Migrate stock between branches║");
-        System.out.println("║ 8. Back to Main Menu             ║");
+        System.out.println("║ 8. Create Patron                 ║");
+        System.out.println("║ 9. Back to Main Menu             ║");
         System.out.println("╚══════════════════════════════════╝");
     }
 
