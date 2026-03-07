@@ -1,0 +1,10 @@
+# Build output folders
+/LearnTrack/out/
+/LearnTrack/bin/
+
+# Generated archives
+*.jar
+
+# OS files
+.DS_Store
+Thumbs.db
