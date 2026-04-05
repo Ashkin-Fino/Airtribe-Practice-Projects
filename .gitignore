@@ -4,6 +4,7 @@
 
 # Generated archives
 *.jar
+*.class
 
 # OS files
 .DS_Store
