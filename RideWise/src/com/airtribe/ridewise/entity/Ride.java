@@ -24,6 +24,14 @@ public class Ride {
         return id; 
     }
 
+    public String[] getStartLocation() { 
+        return startLocation; 
+    }
+
+    public String[] getEndLocation() { 
+        return endLocation; 
+    }
+
     public Rider getRider() { 
         return rider; 
     }
@@ -38,6 +46,10 @@ public class Ride {
 
     public RideStatus getStatus() { 
         return status; 
+    }
+
+    public FareReceipt getReceipt() { 
+        return receipt; 
     }
 
     public void setDriver(Driver driver) { 
