@@ -31,7 +31,7 @@ public class ParkingSpot {
         isOccupied = false;
     }
 
-    public VehicleSize getVehicleSize() {
-        return spotSize;
+    public String getSize() {
+        return spotSize.toString();
     }
 }

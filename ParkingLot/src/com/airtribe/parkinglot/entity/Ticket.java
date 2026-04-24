@@ -10,13 +10,18 @@ public class Ticket {
     private LocalDateTime entryTime;
     private LocalDateTime exitTime;
 
-    public Ticket(String ticketId, ParkingSpot parkingSpot, 
+    public Ticket(ParkingSpot parkingSpot, 
             Vehicle vehicle, LocalDateTime entryTime) {
-        this.ticketId = ticketId;
+        this.ticketId = this.generateTicketId();
         this.parkingSpot = parkingSpot;
         this.vehicleNumber = vehicle.getVehicleNumber();
         this.vehicleSize = vehicle.getSize();
         this.entryTime = entryTime;
+    }
+
+    private String generateTicketId() {
+        // Generates ID using UUID
+        
     }
 
     public void setExitTime(LocalDateTime exitTime) {
@@ -32,7 +37,7 @@ public class Ticket {
     }
 
     public Vehicle getVehicle() {
-        return new Vehicle(vehicleNumber, vehicleSize);
+        return new Vehicle(vehicleNumber, vehicleSize.toString());
     }
 
     public LocalDateTime getEntryTime() {

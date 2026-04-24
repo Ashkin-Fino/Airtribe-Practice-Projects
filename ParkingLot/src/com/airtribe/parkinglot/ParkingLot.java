@@ -1,10 +1,10 @@
 package com.airtribe.parkinglot;
 
-import java.util.Scanner;
-
+import com.airtribe.parkinglot.helper.Utils;
 import com.airtribe.parkinglot.repository.ParkingSpotRepository;
 import com.airtribe.parkinglot.repository.TicketRepository;
 import com.airtribe.parkinglot.service.ParkingService;
+import com.airtribe.parkinglot.service.ParkingSpotService;
 import com.airtribe.parkinglot.ui.Views;
 
 public class ParkingLot {
@@ -12,14 +12,13 @@ public class ParkingLot {
         ParkingSpotRepository parkingSpotRepository = new ParkingSpotRepository();
         TicketRepository ticketRepository = new TicketRepository();
         ParkingService parkingService = new ParkingService(parkingSpotRepository, ticketRepository);
-
-        Scanner scanner = new Scanner(System.in);
+        ParkingSpotService parkingSpotService = new ParkingSpotService(parkingSpotRepository);
 
         Views.WelcomeView();
         
         while (true) {
             Views.ChoiceView();
-            int choice = scanner.nextInt();
+            int choice = Utils.scanner.nextInt();
             switch (choice) {
                 case 1:
                     parkingService.parkVehicle();
@@ -28,8 +27,11 @@ public class ParkingLot {
                     parkingService.unparkVehicle();
                     break;
                 case 3:
+                    parkingSpotService.addParkingSpots();
+                    break;
+                case 4:
                     Views.ExitView();
-                    scanner.close();
+                    Utils.scanner.close();
                     return;
                 default:
                     System.out.println("Invalid option selected. Please select a valid option:");
