@@ -26,7 +26,7 @@ public class ParkingSpotRepository {
         }
     }
 
-    public void addParkingFloor(int floorNumber) {
+    public void addParkingFloor(int floorNumber) throws IllegalArgumentException{
         if (parkingFloors.getOrDefault(floorNumber, null) == null) {
             parkingFloors.put(floorNumber, new ArrayList<>());
         } else {
@@ -34,7 +34,7 @@ public class ParkingSpotRepository {
         }
     }
 
-    public void addParkingSpot(ParkingSpot spot) {
+    public void addParkingSpot(ParkingSpot spot) throws IllegalArgumentException {
         List<ParkingSpot> spots = parkingFloors.get(spot.getFloorNumber());
         if (spots != null) {
             spots.add(spot);
@@ -43,7 +43,7 @@ public class ParkingSpotRepository {
         }
     }
 
-    public List<ParkingSpot> getParkingSpotsByFloor(int floorNumber) {
+    public List<ParkingSpot> getParkingSpotsByFloor(int floorNumber) throws IllegalArgumentException {
         List<ParkingSpot> floor = parkingFloors.get(floorNumber);
         if (floor != null) {
             return floor;
@@ -52,7 +52,7 @@ public class ParkingSpotRepository {
         }
     }
 
-    public ParkingSpot getParkingSpotById(String spotId) {
+    public ParkingSpot getParkingSpotById(String spotId) throws IllegalArgumentException {
         int floorNumber = Integer.parseInt(spotId.split("-")[0]);
         List<ParkingSpot> floor = parkingFloors.get(floorNumber);
         for (ParkingSpot spot : floor) {
