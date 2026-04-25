@@ -8,6 +8,7 @@ public class Ticket {
     private String vehicleNumber;
     private VehicleSize vehicleSize;
     private LocalDateTime entryTime;
+    private TicketStatus status;
     private LocalDateTime exitTime;
 
     public Ticket(ParkingSpot parkingSpot, 
@@ -17,11 +18,12 @@ public class Ticket {
         this.vehicleNumber = vehicle.getVehicleNumber();
         this.vehicleSize = vehicle.getSize();
         this.entryTime = entryTime;
+        this.status = TicketStatus.ACTIVE;
     }
 
     private String generateTicketId() {
         // Generates ID using UUID
-        
+        return java.util.UUID.randomUUID().toString();
     }
 
     public void setExitTime(LocalDateTime exitTime) {
@@ -46,5 +48,13 @@ public class Ticket {
 
     public LocalDateTime getExitTime() {
         return exitTime;
+    }
+
+    public TicketStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = Enum.valueOf(TicketStatus.class, status);
     }
 }

@@ -14,10 +14,10 @@ public class ParkingLot {
         ParkingService parkingService = new ParkingService(parkingSpotRepository, ticketRepository);
         ParkingSpotService parkingSpotService = new ParkingSpotService(parkingSpotRepository);
 
-        Views.WelcomeView();
+        Views.welcomeView();
         
         while (true) {
-            Views.ChoiceView();
+            Views.choiceView();
             int choice = Utils.scanner.nextInt();
             switch (choice) {
                 case 1:
@@ -30,7 +30,7 @@ public class ParkingLot {
                     parkingSpotService.addParkingSpots();
                     break;
                 case 4:
-                    Views.ExitView();
+                    Views.exitView();
                     Utils.scanner.close();
                     return;
                 default:

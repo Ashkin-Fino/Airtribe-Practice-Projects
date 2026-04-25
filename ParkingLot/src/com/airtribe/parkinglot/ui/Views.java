@@ -24,6 +24,11 @@ public class Views {
         System.out.println("Vehicle: " + ticket.getVehicle().getVehicleNumber());
     }
 
+    public static void fareCalculationStrategiesView() {
+        System.out.println("1. Peak Traffic Hourly Rate");
+        System.out.println("2. Standard Hourly Rate");
+    }
+
     public static void exitView() {
         System.out.println("/--------------------------------------\\");
         System.out.println("|Thank you for using Parking Lot system|");
