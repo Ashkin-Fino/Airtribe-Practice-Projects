@@ -1,29 +1,19 @@
-from modules.query_processor import classify_query
+from modules.llm_integration import LLMClient
 
 
 
-def test_read_query_classification():
-    result = classify_query("Read all files in resumes folder")
+def test_llm_client_initialization():
+    client = LLMClient()
 
-    assert result["intent"] == "read_files"
-
-
-
-def test_search_query_classification():
-    result = classify_query("Find resumes mentioning Python")
-
-    assert result["intent"] == "search_files"
+    assert client is not None
 
 
 
-def test_summary_query_classification():
-    result = classify_query("Summarize the PDF file")
+def test_extract_intent_returns_dict():
+    client = LLMClient()
 
-    assert result["intent"] == "summarize_file"
+    result = client.extract_intent(
+        "Find resumes mentioning Python"
+    )
 
-
-
-def test_unknown_query_classification():
-    result = classify_query("Tell me a joke")
-
-    assert result["intent"] == "unknown"
+    assert isinstance(result, dict)

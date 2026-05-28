@@ -1,35 +1,39 @@
 """
-Entry point for the LLM-powered file assistant.
-Phase 1 implementation provides:
-- Basic CLI
-- Query input handling
-- Placeholder query processing flow
+    Main entry point for the LLM-powered file assistant.
 """
 
-from modules.query_processor import classify_query
+from modules.query_processor import process_query
+
 
 
 def main():
-    print("=" * 50)
+
+    print("=" * 60)
     print("LLM Powered File Assistant")
+    print("Powered by Groq + Llama3")
     print("Type 'exit' to quit")
-    print("=" * 50)
+    print("=" * 60)
 
     while True:
-        user_query = input("\nEnter your query: ").strip()
 
-        if user_query.lower() in ["exit", "quit"]:
+        query = input("Enter your query: ").strip()
+
+        if query.lower() in ["exit", "quit"]:
             print("Exiting assistant...")
             break
 
-        if not user_query:
-            print("Please enter a valid query.")
+        if not query:
+            print("Please enter a valid query")
             continue
 
-        result = classify_query(user_query)
+        try:
+            result = process_query(query)
 
-        print("\nProcessed Query:")
-        print(result)
+            print("Result:")
+            print(result)
+
+        except Exception as error:
+            print(f"Error: {error}")
 
 
 if __name__ == "__main__":

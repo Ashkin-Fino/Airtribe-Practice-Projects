@@ -1,44 +1,65 @@
 """
-Query processor module.
-Responsible for:
-- Basic query classification
-- Routing queries to future tools
+    Query processor module.
+    Responsible for:
+    - LLM-powered query classification
+    - Tool routing
 """
 
-from typing import Dict
+from modules.llm_integration import LLMClient
+from modules.file_tools import (
+    read_files_in_folder,
+    search_files_for_keyword,
+    summarize_file
+)
 
 
-INTENT_KEYWORDS = {
-    "read_files": ["read", "open", "show"],
-    "search_files": ["search", "find", "lookup"],
-    "summarize_file": ["summarize", "summary"]
-}
+llm_client = LLMClient()
 
 
 
-def classify_query(query: str) -> Dict[str, str]:
+def process_query(query: str):
     """
-    Classifies a user query into a basic intent.
+        Processes user query using the LLM.
 
-    Args:
-        query (str): User input query.
+        Args:
+            query (str): User query.
 
-    Returns:
-        Dict[str, str]: Intent classification result.
+        Returns:
+            Any: Tool execution result.
     """
 
-    normalized_query = query.lower()
+    result = llm_client.extract_intent(query)
+    print(result)
 
-    for intent, keywords in INTENT_KEYWORDS.items():
-        if any(keyword in normalized_query for keyword in keywords):
-            return {
-                "intent": intent,
-                "query": query,
-                "status": "classified"
-            }
+    intent = result.get("intent")
+
+    if intent == "read_files":
+        folder_path = result.get("folder_path")
+
+        if not folder_path:
+            return "Folder path missing in query"
+
+        return read_files_in_folder(folder_path)
+    elif intent == "search_files":
+        folder_path = result.get("folder_path")
+        keyword = result.get("keyword")
+
+        if not folder_path or not keyword:
+            return "Folder path or keyword missing in query"
+
+        return search_files_for_keyword(
+            folder_path,
+            keyword
+        )
+    elif intent == "summarize_file":
+        file_path = result.get("file_path")
+
+        if not file_path:
+            return "File path missing in query"
+
+        return summarize_file(file_path)
 
     return {
-        "intent": "unknown",
-        "query": query,
-        "status": "unclassified"
+        "status": "unsupported_query",
+        "message": "Could not understand the query"
     }
