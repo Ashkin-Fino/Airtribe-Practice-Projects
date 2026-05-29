@@ -1,58 +1,186 @@
-"""
-File tools module.
-Contains placeholder implementations for future file operations.
-"""
+import os
+from typing import List, Dict
+from PyPDF2 import PdfReader
+from pathlib import Path
 
-from typing import List
+from modules.llm_integration import LLMClient
 
 
+SUPPORTED_EXTENSIONS = [".txt", ".pdf"]
 
-def read_files_in_folder(folder_path: str) -> List[str]:
+BASE_DIR = Path.cwd()
+
+llm_client = LLMClient()
+
+
+def resolve_path(path: str) -> str:
     """
-    Placeholder for reading files in a folder.
-
-    Args:
-        folder_path (str): Path to the folder.
-
-    Returns:
-        List[str]: List of file contents.
-    """
-
-    raise NotImplementedError(
-        "read_files_in_folder() will be implemented in Phase 3"
-    )
-
-
-
-def search_files_for_keyword(folder_path: str, keyword: str) -> List[str]:
-    """
-    Placeholder for keyword search functionality.
-
-    Args:
-        folder_path (str): Folder path.
-        keyword (str): Keyword to search.
-
-    Returns:
-        List[str]: Matching file names.
+        Resolves relative paths to absolute paths.
     """
 
-    raise NotImplementedError(
-        "search_files_for_keyword() will be implemented in Phase 3"
-    )
+    input_path = Path(path)
 
+    if input_path.is_absolute():
+        return str(input_path)
+
+    resolved_path = BASE_DIR / input_path
+
+    return str(resolved_path.resolve())
+
+
+def get_all_supported_files(folder_path: str) -> List[str]:
+    """
+    Returns all supported files from folder.
+    """
+
+    folder_path = resolve_path(folder_path)
+
+    if not os.path.exists(folder_path):
+        raise FileNotFoundError(
+            f"Folder does not exist: {folder_path}"
+        )
+
+    files = []
+
+    for file_name in os.listdir(folder_path):
+
+        full_path = os.path.join(folder_path, file_name)
+
+        if os.path.isfile(full_path):
+
+            extension = os.path.splitext(file_name)[1].lower()
+
+            if extension in SUPPORTED_EXTENSIONS:
+                files.append(full_path)
+
+    return files
+
+
+def extract_text_from_txt(file_path: str) -> str:
+    """
+    Extracts text from txt file.
+    """
+
+    with open(file_path, "r", encoding="utf-8") as file:
+        return file.read()
+
+
+def extract_text_from_pdf(file_path: str) -> str:
+    """
+    Extracts text from PDF file.
+    """
+
+    reader = PdfReader(file_path)
+
+    extracted_text = []
+
+    for page in reader.pages:
+
+        text = page.extract_text()
+
+        if text:
+            extracted_text.append(text)
+
+    return "\n".join(extracted_text)
+
+
+def extract_text(file_path: str) -> str:
+    """
+    Extracts text based on file extension.
+    """
+
+    extension = os.path.splitext(file_path)[1].lower()
+
+    if extension == ".txt":
+        return extract_text_from_txt(file_path)
+
+    elif extension == ".pdf":
+        return extract_text_from_pdf(file_path)
+
+    else:
+        raise ValueError(f"Unsupported file type: {extension}")
+
+
+def read_files_in_folder(folder_path: str) -> Dict[str, str]:
+    """
+        Reads all supported files in folder.
+    """
+
+    files = get_all_supported_files(folder_path)
+
+    results = {}
+
+    for file_path in files:
+        try:
+            content = extract_text(file_path)
+            results[file_path] = content
+        except Exception as error:
+            results[file_path] = (f"Error reading file: {error}")
+
+    return results
+
+
+def search_files_for_keyword(
+    folder_path: str,
+    keyword: str
+) -> List[str]:
+    """
+        Searches files containing keyword.
+    """
+
+    files = get_all_supported_files(folder_path)
+
+    matching_files = []
+
+    keyword = keyword.lower()
+
+    for file_path in files:
+        try:
+            content = extract_text(file_path)
+            if keyword in content.lower():
+                matching_files.append(file_path)
+        except Exception:
+            continue
+
+    return matching_files
 
 
 def summarize_file(file_path: str) -> str:
     """
-    Placeholder for file summarization.
-
-    Args:
-        file_path (str): Path to the file.
-
-    Returns:
-        str: File summary.
+        Summarizes file content using Groq LLM.
     """
+    folder_path = resolve_path(folder_path)
 
-    raise NotImplementedError(
-        "summarize_file() will be implemented in Phase 3"
+    if not os.path.exists(file_path):
+        raise FileNotFoundError(f"File does not exist: {file_path}")
+
+    content = extract_text(file_path)
+
+    if not content.strip():
+        return "File is empty"
+
+    truncated_content = content[:12000]
+
+    prompt = f'''
+        Summarize the following document.
+
+        Document:
+        {truncated_content}
+    '''
+
+    response = llm_client.client.chat.completions.create(
+        model=llm_client.model_name,
+        messages=[
+            {
+                "role": "system",
+                "content": "You are a document summarizer."
+            },
+            {
+                "role": "user",
+                "content": prompt
+            }
+        ],
+        temperature=0.2
     )
+
+    return response.choices[0].message.content

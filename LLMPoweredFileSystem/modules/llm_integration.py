@@ -6,6 +6,7 @@
 """
 import json
 import os
+import re
 from groq import Groq
 from dotenv import load_dotenv
 
@@ -40,10 +41,31 @@ class LLMClient:
                 dict: Parsed JSON response.
         """
 
-        system_prompt = """
-            You are an intent classification engine.
+        system_prompt =  """
+            You are a JSON API and an intent extraction engine.
+
+            Extract:
+            - intent
+            - folder_path
+            - file_path
+            - keyword
+
+            IMPORTANT:
+            - If user says 'resumes folder',
+            folder_path should be 'resumes'
+            - If user says 'C:Users/name/resumes folder',
+            folder_path should be 'C:Users/name/resumes'
+            - If user says 'python experience', 
+            keyword should be 'python', and not 
+            'python experience'
 
             Return ONLY valid JSON.
+
+            DO NOT:
+            - add explanations
+            - add markdown
+            - add code fences
+            - add extra text
 
             Supported intents:
             - read_files
@@ -51,12 +73,12 @@ class LLMClient:
             - summarize_file
             - unknown
 
-            Response format:
+            Response schema:
             {
-                "intent": "intent_name",
-                "folder_path": "optional_folder_path",
-                "file_path": "optional_file_path",
-                "keyword": "optional_keyword"
+                "intent": "string",
+                "folder_path": "string or null",
+                "file_path": "string or null",
+                "keyword": "string or null"
             }
         """
 
@@ -75,11 +97,31 @@ class LLMClient:
             ]
         )
 
-        content = response.choices[0].message.content
+        content = response.choices[0].message.content.strip()
+
+        # Remove markdown code fences
+        content = re.sub(r"^```json", "", content)
+        content = re.sub(r"^```", "", content)
+        content = re.sub(r"```$", "", content)
+
+        content = content.strip()
+
+        # Extract first JSON object
+        match = re.search(r"\{.*\}", content, re.DOTALL)
+
+        if not match:
+            return {
+                "intent": "unknown",
+                "raw_response": content
+            }
+
+        json_string = match.group(0)
 
         try:
-            return json.loads(content)
+            return json.loads(json_string)
+
         except json.JSONDecodeError:
+
             return {
                 "intent": "unknown",
                 "raw_response": content

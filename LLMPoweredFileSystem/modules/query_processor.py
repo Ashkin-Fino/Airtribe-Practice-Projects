@@ -47,10 +47,12 @@ def process_query(query: str):
         if not folder_path or not keyword:
             return "Folder path or keyword missing in query"
 
-        return search_files_for_keyword(
-            folder_path,
-            keyword
-        )
+        try:
+            return search_files_for_keyword(folder_path, keyword)
+        except FileNotFoundError as error:
+            return str(error)
+        except Exception as error:
+            return f"Unexpected error: {error}"
     elif intent == "summarize_file":
         file_path = result.get("file_path")
 
