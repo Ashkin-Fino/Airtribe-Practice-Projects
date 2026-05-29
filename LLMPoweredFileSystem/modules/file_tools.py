@@ -175,7 +175,7 @@ def summarize_file(file_path: str) -> str:
     """
         Summarizes file content using Groq LLM.
     """
-    folder_path = resolve_path(folder_path)
+    file_path = resolve_path(file_path)
 
     if not os.path.exists(file_path):
         raise FileNotFoundError(f"File does not exist: {file_path}")
@@ -210,3 +210,56 @@ def summarize_file(file_path: str) -> str:
     )
 
     return response.choices[0].message.content
+
+
+def write_file(file_path: str, content: str) -> str:
+    """
+        Writes content to a file.
+
+        Args:
+            file_path (str): Output file path.
+            content (str): Content to write.
+
+        Returns:
+            str: Success message.
+    """
+
+    file_path = resolve_path(file_path)
+
+    parent_directory = os.path.dirname(file_path)
+
+    if parent_directory:
+        os.makedirs(parent_directory, exist_ok=True)
+
+    with open(file_path, "w", encoding="utf-8") as file:
+        file.write(content)
+
+    return f"Content written successfully to: {file_path}"
+
+
+def write_content_to_file(
+    source_file_path: str,
+    output_file_path: str
+) -> str:
+    """
+        Generates summary from source file
+        and writes it to output file.
+
+        Args:
+            source_file_path (str): Input file path.
+
+        Returns:
+            str: Success message.
+    """
+
+    source_path = Path(source_file_path)
+    file_name = source_path.stem
+    if (output_file_path is not None):
+        output_file_path = f"summaries/{file_name}_summary.txt"
+
+    summary = summarize_file(source_file_path)
+
+    return write_file(
+        output_file_path,
+        summary
+    )

@@ -50,14 +50,32 @@ class LLMClient:
             - file_path
             - keyword
 
+            Supported intents:
+            - read_files
+            - search_files
+            - summarize_file
+            - generate_summary_file
+            - unknown
+
             IMPORTANT:
             - If user says 'resumes folder',
             folder_path should be 'resumes'
             - If user says 'C:Users/name/resumes folder',
             folder_path should be 'C:Users/name/resumes'
+            - If user says 'C:Users/name/resumes/john.txt file',
+            folder_path should be 'C:Users/name/resumes' and
+            file_path should be 'C:Users/name/resumes/john.txt'
             - If user says 'python experience', 
             keyword should be 'python', and not 
             'python experience'
+
+            If user asks to:
+                - save summary
+                - write summary
+                - create summary file
+                - store summary
+            then use intent:
+                "generate_summary_file"
 
             Return ONLY valid JSON.
 
@@ -67,18 +85,13 @@ class LLMClient:
             - add code fences
             - add extra text
 
-            Supported intents:
-            - read_files
-            - search_files
-            - summarize_file
-            - unknown
-
             Response schema:
             {
                 "intent": "string",
                 "folder_path": "string or null",
                 "file_path": "string or null",
-                "keyword": "string or null"
+                "keyword": "string or null",
+                "output_file_path": "string or null"
             }
         """
 

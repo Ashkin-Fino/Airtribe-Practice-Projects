@@ -1,0 +1,27 @@
+**Summary of John Doe's Professional Profile**
+
+John Doe is a software engineer with 4 years of experience in backend development and API design. His key skills include:
+
+- Programming languages: Python, Java
+- Frameworks: Django, Spring Boot
+- Databases: PostgreSQL
+- Containerization: Docker
+- Version control: Git
+- APIs: REST APIs
+
+**Work Experience:**
+
+- **Software Engineer, TechNova Solutions (2022-Present)**
+  - Developed backend APIs using Django and Django REST Framework
+  - Built microservices using Spring Boot
+  - Improved API response times by 35%
+  - Worked with PostgreSQL and Redis caching
+
+- **Junior Developer, CodeBridge Systems (2020-2022)**
+  - Developed internal tools using Python
+  - Assisted in Java Spring application maintenance
+  - Wrote unit and integration tests
+
+**Education:**
+
+- **Bachelor of Science in Computer Science, University of California (2019)**

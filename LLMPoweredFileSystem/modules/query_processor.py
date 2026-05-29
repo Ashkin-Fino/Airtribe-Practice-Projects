@@ -9,7 +9,8 @@ from modules.llm_integration import LLMClient
 from modules.file_tools import (
     read_files_in_folder,
     search_files_for_keyword,
-    summarize_file
+    summarize_file,
+    write_content_to_file
 )
 
 
@@ -35,18 +36,14 @@ def process_query(query: str):
 
     if intent == "read_files":
         folder_path = result.get("folder_path")
-
         if not folder_path:
             return "Folder path missing in query"
-
         return read_files_in_folder(folder_path)
     elif intent == "search_files":
         folder_path = result.get("folder_path")
         keyword = result.get("keyword")
-
         if not folder_path or not keyword:
             return "Folder path or keyword missing in query"
-
         try:
             return search_files_for_keyword(folder_path, keyword)
         except FileNotFoundError as error:
@@ -55,11 +52,20 @@ def process_query(query: str):
             return f"Unexpected error: {error}"
     elif intent == "summarize_file":
         file_path = result.get("file_path")
-
         if not file_path:
             return "File path missing in query"
-
         return summarize_file(file_path)
+    elif intent == "generate_summary_file":
+        file_path = result.get("file_path")
+        output_file_path = result.get(
+            "output_file_path"
+        )
+        if not file_path:
+            return "File path missing in query"
+        return write_content_to_file(
+            file_path,
+            output_file_path
+        )
 
     return {
         "status": "unsupported_query",
