@@ -2,11 +2,12 @@ import os
 from typing import List, Dict
 from PyPDF2 import PdfReader
 from pathlib import Path
+from docx import Document
 
 from modules.llm_integration import LLMClient
 
 
-SUPPORTED_EXTENSIONS = [".txt", ".pdf"]
+SUPPORTED_EXTENSIONS = [".txt", ".pdf", ".docx"]
 
 BASE_DIR = Path.cwd()
 
@@ -28,7 +29,7 @@ def resolve_path(path: str) -> str:
     return str(resolved_path.resolve())
 
 
-def get_all_supported_files(folder_path: str) -> List[str]:
+def list_supported_files(folder_path: str, ext: str = None) -> List[str]:
     """
     Returns all supported files from folder.
     """
@@ -51,14 +52,17 @@ def get_all_supported_files(folder_path: str) -> List[str]:
             extension = os.path.splitext(file_name)[1].lower()
 
             if extension in SUPPORTED_EXTENSIONS:
+                if ext and extension != ext:
+                    continue
                 files.append(full_path)
 
     return files
 
 
+## File content extraction methods
 def extract_text_from_txt(file_path: str) -> str:
     """
-    Extracts text from txt file.
+        Extracts text from txt file.
     """
 
     with open(file_path, "r", encoding="utf-8") as file:
@@ -67,7 +71,7 @@ def extract_text_from_txt(file_path: str) -> str:
 
 def extract_text_from_pdf(file_path: str) -> str:
     """
-    Extracts text from PDF file.
+        Extracts text from PDF file.
     """
 
     reader = PdfReader(file_path)
@@ -84,9 +88,28 @@ def extract_text_from_pdf(file_path: str) -> str:
     return "\n".join(extracted_text)
 
 
+def extract_text_from_docx(file_path: str) -> str:
+    """
+        Extracts text from DOCX file.
+    """
+
+    document = Document(file_path)
+
+    paragraphs = []
+
+    for paragraph in document.paragraphs:
+
+        text = paragraph.text.strip()
+
+        if text:
+            paragraphs.append(text)
+
+    return "\n".join(paragraphs)
+
+
 def extract_text(file_path: str) -> str:
     """
-    Extracts text based on file extension.
+        Extracts text based on file extension.
     """
 
     extension = os.path.splitext(file_path)[1].lower()
@@ -96,6 +119,9 @@ def extract_text(file_path: str) -> str:
 
     elif extension == ".pdf":
         return extract_text_from_pdf(file_path)
+    
+    elif extension == ".docx":
+        return extract_text_from_docx(file_path)
 
     else:
         raise ValueError(f"Unsupported file type: {extension}")
@@ -106,7 +132,7 @@ def read_files_in_folder(folder_path: str) -> Dict[str, str]:
         Reads all supported files in folder.
     """
 
-    files = get_all_supported_files(folder_path)
+    files = list_supported_files(folder_path)
 
     results = {}
 
@@ -128,7 +154,7 @@ def search_files_for_keyword(
         Searches files containing keyword.
     """
 
-    files = get_all_supported_files(folder_path)
+    files = list_supported_files(folder_path)
 
     matching_files = []
 
