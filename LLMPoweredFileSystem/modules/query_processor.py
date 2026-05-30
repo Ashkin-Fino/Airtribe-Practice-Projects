@@ -57,9 +57,7 @@ def process_query(query: str):
         return summarize_file(file_path)
     elif intent == "generate_summary_file":
         file_path = result.get("file_path")
-        output_file_path = result.get(
-            "output_file_path"
-        )
+        output_file_path = result.get("output_file_path")
         if not file_path:
             return "File path missing in query"
         return write_content_to_file(
