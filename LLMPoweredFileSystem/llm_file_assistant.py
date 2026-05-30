@@ -1,6 +1,7 @@
 """
     Main entry point for the LLM-powered file assistant.
 """
+import json
 
 from modules.exceptions import FileAssistantError
 from modules.query_processor import process_query
@@ -43,7 +44,8 @@ def main():
 
         try:
             result = process_query(query)
-            print(f"Result: {result}")
+            print(f"Result:")
+            print(json.dumps(result, indent=4))
             print("✓ Operation completed successfully")
         except FileAssistantError as error:
             print(f"Error: {error}")
