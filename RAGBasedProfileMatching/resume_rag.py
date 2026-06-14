@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from pathlib import Path
 import re
 
+from sentence_transformers import SentenceTransformer
 from pypdf import PdfReader
 from docx import Document
 
@@ -283,13 +284,17 @@ class ResumeChunker:
     }
 
     def normalize_heading(self, line: str):
+
         line = line.strip().lower()
+        line = line.rstrip(":")
+
         for section, aliases in self.SECTION_PATTERNS.items():
             if line in aliases:
                 return section
+
         return None
 
-    def chunk(self, resume_text: str):
+    def chunk(self, resume_text: str , resume_name: str):
 
         lines = resume_text.splitlines()
         chunks = []
@@ -309,6 +314,7 @@ class ResumeChunker:
                 if current_content:
                     chunks.append({
                         "chunk_id": f"{current_section}_{chunk_counter}",
+                        "resume_name": resume_name,
                         "section": current_section.title(),
                         "text": "\n".join(current_content)
                     })
@@ -321,6 +327,7 @@ class ResumeChunker:
         if current_content:
             chunks.append({
                 "chunk_id": f"{current_section}_{chunk_counter}",
+                "resume_name": resume_name,
                 "section": current_section.title(),
                 "text": "\n".join(current_content)
             })
@@ -329,13 +336,58 @@ class ResumeChunker:
 
 
 class EmbeddingService:
-    """Generate embeddings for chunks."""
+    """
+    Generates embeddings using Sentence Transformers.
+    """
+
+    MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
+
+    def __init__(self):
+        self.model = SentenceTransformer(self.MODEL_NAME)
 
     def generate_embedding(self, text: str):
-        raise NotImplementedError
+        """
+        Generate embedding for a single text.
+        """
+        if not text:
+            return []
+        embedding = self.model.encode(text, convert_to_numpy=True)
+        return embedding.tolist()
 
     def generate_embeddings(self, chunks):
-        raise NotImplementedError
+        """
+            Generate embeddings for all chunks.
+            Input:
+                [{
+                    "chunk_id": "...",
+                    "resume_name": "...",
+                    "section": "...",
+                    "text": "..."
+                }]
+            Output:
+                [{
+                    "chunk_id": "...",
+                    "resume_name": resume_name,
+                    "section": "...",
+                    "text": "...",
+                    "embedding": [...]
+                }]
+        """
+
+        if not chunks:
+            return []
+
+        texts = [chunk["text"] for chunk in chunks]
+        embeddings = self.model.encode(texts, convert_to_numpy=True)
+
+        results = []
+        for chunk, embedding in zip(chunks, embeddings):
+            results.append({
+                **chunk,
+                "embedding": embedding.tolist()
+            })
+
+        return results
 
 
 class VectorStore:
@@ -363,18 +415,22 @@ if __name__ == "__main__":
     loader = ResumeLoader()
     extractor = MetadataExtractor()
     chunker = ResumeChunker()
+    embedding_service = EmbeddingService()
 
     resume = loader.load_resume(str(RESUME_DIR / "sample_resume.txt"))
     metadata = extractor.extract(resume["content"])
-    chunks = chunker.chunk(resume["content"])
+    chunks = chunker.chunk(resume["content"], resume_name=resume["file_name"])
+    embedded_chunks = (embedding_service.generate_embeddings(chunks))
 
-    print(metadata)
+    print()
+    print("Chunk Count:")
+    print(len(embedded_chunks))
 
-    for chunk in chunks:
-
-        print("=" * 50)
-        print(chunk["chunk_id"])
-        print("=" * 10)
-        print(chunk["section"])
-        print()
-        print(chunk["text"])
+    print()
+    print("First Chunk:")
+    print(embedded_chunks[0]["chunk_id"])
+    print(embedded_chunks[0]["section"])
+    print()
+    print(embedded_chunks[0]["embedding"][:10])
+    print()
+    print("Embedding Dimensions:", len(embedded_chunks[0]["embedding"]))
