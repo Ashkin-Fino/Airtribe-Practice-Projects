@@ -1,0 +1,46 @@
+John Doe
+
+Senior Python Developer
+
+Email: john.doe@gmail.com
+Phone: +1 555 123 4567
+
+Professional Summary
+
+Experienced Software Engineer with 7 years of experience building scalable backend systems using Python and AWS.
+
+Skills
+
+Python
+AWS
+Docker
+Kubernetes
+SQL
+Git
+Linux
+
+Experience
+
+Senior Software Engineer
+ABC Technologies
+2019 - Present
+
+Developed microservices using Python and Flask.
+Designed AWS-based cloud solutions.
+Implemented CI/CD pipelines using Jenkins.
+
+Software Engineer
+XYZ Solutions
+2017 - 2019
+
+Built REST APIs using Django.
+Worked with PostgreSQL databases.
+
+Education
+
+Bachelor of Engineering in Computer Science
+Anna University
+
+Certifications
+
+AWS Certified Solutions Architect

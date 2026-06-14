@@ -1,0 +1,380 @@
+from abc import ABC, abstractmethod
+from pathlib import Path
+import re
+
+from pypdf import PdfReader
+from docx import Document
+
+
+PROJECT_ROOT = Path(__file__).parent
+RESUME_DIR = PROJECT_ROOT / "resumes"
+
+class ResumeLoader:
+    """
+    Loads resume files from the local filesystem.
+
+    Supported formats:
+        - .txt
+        - .pdf
+        - .docx
+    """
+
+    SUPPORTED_EXTENSIONS = {".txt", ".pdf", ".docx"}
+
+    def load_txt(self, file_path: str) -> dict:
+        """
+        Load text file.
+        """
+
+        with open(file_path, "r", encoding="utf-8") as file:
+            content = file.read()
+
+        return {
+            "file_name": Path(file_path).name,
+            "file_path": file_path,
+            "content": content
+        }
+
+    def load_pdf(self, file_path: str) -> dict:
+        """
+        Extract text from PDF.
+        """
+
+        reader = PdfReader(file_path)
+
+        pages = []
+
+        for page in reader.pages:
+            text = page.extract_text()
+
+            if text:
+                pages.append(text)
+
+        content = "\n".join(pages)
+
+        return {
+            "file_name": Path(file_path).name,
+            "file_path": file_path,
+            "content": content
+        }
+
+    def load_docx(self, file_path: str) -> dict:
+        """
+        Extract text from DOCX.
+        """
+
+        document = Document(file_path)
+
+        paragraphs = []
+
+        for paragraph in document.paragraphs:
+            text = paragraph.text.strip()
+
+            if text:
+                paragraphs.append(text)
+
+        content = "\n".join(paragraphs)
+
+        return {
+            "file_name": Path(file_path).name,
+            "file_path": file_path,
+            "content": content
+        }
+
+    def load_resume(self, file_path: str) -> dict:
+        """
+        Auto-detect resume type and load.
+        """
+        file_path = Path(file_path)
+        print(f"Loading resume: {file_path}")
+
+        if not file_path.exists():
+            raise FileNotFoundError(f"Resume file not found: {file_path}")
+        
+        extension = file_path.suffix.lower()
+        if extension not in self.SUPPORTED_EXTENSIONS:
+            raise ValueError(f"Unsupported file type: {extension}")
+
+        if extension == ".txt":
+            return self.load_txt(file_path)
+
+        if extension == ".pdf":
+            return self.load_pdf(file_path)
+
+        if extension == ".docx":
+            return self.load_docx(file_path)
+    
+    def load_resumes_from_directory(self, directory_path: str):
+        resumes = []
+
+        for file_path in Path(directory_path).iterdir():
+
+            if file_path.suffix.lower() in self.SUPPORTED_EXTENSIONS:
+                resumes.append(
+                    self.load_resume(str(file_path))
+                )
+
+        return resumes
+
+
+class MetadataExtractor:
+    """
+    Extract metadata from resume text.
+
+    Extracts:
+        - Name
+        - Skills
+        - Experience Years
+        - Education
+    """
+
+    SKILLS_DATABASE = {
+        "python", "java", "javascript", "typescript", "react", "angular",
+        "vue", "django", "flask", "spring", "spring boot", "aws", "azure",
+        "docker", "kubernetes", "sql", "mysql", "postgresql", "html", "css",
+        "redis", "machine learning", "deep learning", "tensorflow", "gcp",
+        "git", "github", "linux", "rest api", "microservices", "pytorch",
+        "nodejs", "jenkins", "terraform", "cloudformation", "mongodb"
+    }
+
+    EDUCATION_KEYWORDS = [
+        "bachelor", "master", "b.tech", "m.tech", "b.e",
+        "m.e", "bsc", "msc", "phd", "doctorate"
+    ]
+
+    def extract_name(self, text: str) -> str:
+        """
+        Assumption:
+        Resume starts with candidate name.
+        """
+
+        lines = [
+            line.strip()
+            for line in text.splitlines()
+            if line.strip()
+        ]
+
+        if not lines:
+            return ""
+
+        first_line = lines[0]
+
+        if len(first_line.split()) <= 5:
+            return first_line
+
+        return ""
+
+    def extract_skills(self, text: str) -> list:
+        """
+        Match skills from predefined skill database.
+        """
+
+        text_lower = text.lower()
+
+        matched_skills = []
+
+        for skill in self.SKILLS_DATABASE:
+
+            if skill in text_lower:
+                matched_skills.append(skill)
+
+        return sorted(matched_skills)
+
+    def extract_experience_years(self, text: str) -> int:
+        """
+        Extract years of experience using regex.
+
+        Examples:
+            5 years experience
+            7+ years
+            3 yrs
+        """
+
+        patterns = [
+            r'(\d+)\+?\s+years',
+            r'(\d+)\+?\s+year',
+            r'(\d+)\+?\s+yrs',
+            r'(\d+)\+?\s+yr'
+        ]
+
+        max_years = 0
+
+        text_lower = text.lower()
+
+        for pattern in patterns:
+
+            matches = re.findall(pattern, text_lower)
+
+            for match in matches:
+                max_years = max(
+                    max_years,
+                    int(match)
+                )
+
+        return max_years
+
+    def extract_education(self, text: str) -> str:
+        """
+        Extract highest education found.
+        """
+
+        text_lower = text.lower()
+
+        for keyword in self.EDUCATION_KEYWORDS:
+
+            if keyword in text_lower:
+                return keyword.title()
+
+        return ""
+
+    def extract(self, resume_text: str) -> dict:
+
+        return {
+            "name": self.extract_name(resume_text),
+            "skills": self.extract_skills(resume_text),
+            "experience_years": self.extract_experience_years(resume_text),
+            "education": self.extract_education(resume_text)
+        }
+
+
+class ResumeChunker:
+    """
+    Splits resumes into logical sections.
+
+    Preferred sections:
+
+    - Summary
+    - Skills
+    - Experience
+    - Education
+    - Projects
+    - Certifications
+    """
+
+    SECTION_PATTERNS = {
+        "summary": [
+            "summary",
+            "professional summary",
+            "profile"
+        ],
+        "skills": [
+            "skills",
+            "technical skills",
+            "core skills"
+        ],
+        "experience": [
+            "experience",
+            "work experience",
+            "employment history",
+            "professional experience"
+        ],
+        "education": [
+            "education",
+            "academic background"
+        ],
+        "projects": [
+            "projects",
+            "project experience"
+        ],
+        "certifications": [
+            "certifications",
+            "certificates"
+        ]
+    }
+
+    def normalize_heading(self, line: str):
+        line = line.strip().lower()
+        for section, aliases in self.SECTION_PATTERNS.items():
+            if line in aliases:
+                return section
+        return None
+
+    def chunk(self, resume_text: str):
+
+        lines = resume_text.splitlines()
+        chunks = []
+        current_section = "general"
+        current_content = []
+
+        chunk_counter = 1
+        for line in lines:
+            stripped_line = line.strip()
+
+            if not stripped_line:
+                continue
+
+            detected_section = self.normalize_heading(stripped_line)
+
+            if detected_section:
+                if current_content:
+                    chunks.append({
+                        "chunk_id": f"{current_section}_{chunk_counter}",
+                        "section": current_section.title(),
+                        "text": "\n".join(current_content)
+                    })
+                    chunk_counter += 1
+                current_section = detected_section
+                current_content = []
+            else:
+                current_content.append(stripped_line)
+
+        if current_content:
+            chunks.append({
+                "chunk_id": f"{current_section}_{chunk_counter}",
+                "section": current_section.title(),
+                "text": "\n".join(current_content)
+            })
+
+        return chunks
+
+
+class EmbeddingService:
+    """Generate embeddings for chunks."""
+
+    def generate_embedding(self, text: str):
+        raise NotImplementedError
+
+    def generate_embeddings(self, chunks):
+        raise NotImplementedError
+
+
+class VectorStore:
+    """Persist embeddings and metadata."""
+
+    def add_documents(self, documents):
+        raise NotImplementedError
+
+    def persist(self):
+        raise NotImplementedError
+
+
+class ResumeRAGPipeline:
+    """Main ingestion pipeline."""
+
+    def index_resume(self, path: str):
+        raise NotImplementedError
+
+    def index_directory(self, resume_folder: str):
+        raise NotImplementedError
+
+
+if __name__ == "__main__":
+
+    loader = ResumeLoader()
+    extractor = MetadataExtractor()
+    chunker = ResumeChunker()
+
+    resume = loader.load_resume(str(RESUME_DIR / "sample_resume.txt"))
+    metadata = extractor.extract(resume["content"])
+    chunks = chunker.chunk(resume["content"])
+
+    print(metadata)
+
+    for chunk in chunks:
+
+        print("=" * 50)
+        print(chunk["chunk_id"])
+        print("=" * 10)
+        print(chunk["section"])
+        print()
+        print(chunk["text"])
