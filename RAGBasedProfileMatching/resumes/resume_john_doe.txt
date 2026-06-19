@@ -1,0 +1,38 @@
+John Doe
+Email: john.doe@email.com
+Phone: +1-555-123-4567
+Location: New York, USA
+
+Professional Summary:
+    Software Engineer with 4 years of experience in backend development and API design. Skilled in Python, Django, Java, and Spring Boot. Experienced in building scalable web applications and REST APIs.
+
+Skills:
+    - Python
+    - Django
+    - Java
+    - Spring Boot
+    - REST APIs
+    - PostgreSQL
+    - Docker
+    - Git
+
+Experience:
+    Software Engineer
+    TechNova Solutions
+    2022 - Present
+        - Developed backend APIs using Django and Django REST Framework.
+        - Built microservices using Spring Boot.
+        - Improved API response times by 35%.
+        - Worked with PostgreSQL and Redis caching.
+
+    Junior Developer
+    CodeBridge Systems
+    2020 - 2022
+        - Developed internal tools using Python.
+        - Assisted in Java Spring application maintenance.
+        - Wrote unit and integration tests.
+
+Education:
+    Bachelor of Science in Computer Science
+    University of California
+    2019
