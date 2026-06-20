@@ -21,3 +21,6 @@ Thumbs.db
 __pycache__/
 venv/
 .vscode/
+
+# ChromaDB persistent storage
+*/data/chroma_db/

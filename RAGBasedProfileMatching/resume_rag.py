@@ -5,10 +5,13 @@ import re
 from sentence_transformers import SentenceTransformer
 from pypdf import PdfReader
 from docx import Document
+import chromadb
+from chromadb.config import Settings
 
 
 PROJECT_ROOT = Path(__file__).parent
 RESUME_DIR = PROJECT_ROOT / "resumes"
+CHROMA_DB_DIR = PROJECT_ROOT / "data" / "chroma_db"
 
 class ResumeLoader:
     """
@@ -391,13 +394,65 @@ class EmbeddingService:
 
 
 class VectorStore:
-    """Persist embeddings and metadata."""
 
-    def add_documents(self, documents):
-        raise NotImplementedError
+    COLLECTION_NAME = "resume_chunks"
 
-    def persist(self):
-        raise NotImplementedError
+    def __init__(self, persist_directory=None):
+        if persist_directory is None:
+            persist_directory = CHROMA_DB_DIR
+
+        persist_directory = Path(persist_directory).resolve()
+        persist_directory.mkdir(parents=True, exist_ok=True)
+
+        self.client = chromadb.PersistentClient(
+            path=str(persist_directory)
+        )
+
+        self.collection = self.client.get_or_create_collection(
+            name=self.COLLECTION_NAME
+        )
+
+    def add_documents(self, embedded_chunks, metadata):
+        """
+        Store chunks in ChromaDB.
+        """
+
+        ids = []
+        documents = []
+        embeddings = []
+        metadatas = []
+
+        for chunk in embedded_chunks:
+            ids.append(f"{chunk['resume_name']}_{chunk['chunk_id']}")
+            documents.append(chunk["text"])
+            embeddings.append(chunk["embedding"])
+            metadatas.append({
+                "resume_name": chunk["resume_name"],
+                "section": chunk["section"],
+                "candidate_name": metadata["name"],
+                "experience_years": metadata["experience_years"],
+                "education": metadata["education"],
+                "skills": ",".join(metadata["skills"])
+            })
+
+        self.collection.add(
+            ids=ids,
+            documents=documents,
+            embeddings=embeddings,
+            metadatas=metadatas
+        )
+
+    def count(self):
+        return self.collection.count()
+    
+    def search(self, query_embedding, top_k=10):
+
+        results = self.collection.query(
+            query_embeddings=[query_embedding],
+            n_results=top_k
+        )
+
+        return results
 
 
 class ResumeRAGPipeline:
@@ -416,21 +471,20 @@ if __name__ == "__main__":
     extractor = MetadataExtractor()
     chunker = ResumeChunker()
     embedding_service = EmbeddingService()
+    vector_store = VectorStore()
 
-    resume = loader.load_resume(str(RESUME_DIR / "sample_resume.txt"))
-    metadata = extractor.extract(resume["content"])
-    chunks = chunker.chunk(resume["content"], resume_name=resume["file_name"])
+    resume = loader.load_resumes_from_directory(str(RESUME_DIR))
+    metadata = extractor.extract(resume[0]["content"])
+    chunks = chunker.chunk(resume[0]["content"], resume_name=resume[0]["file_name"])
     embedded_chunks = (embedding_service.generate_embeddings(chunks))
+    vector_store.add_documents(embedded_chunks, metadata)
 
     print()
     print("Chunk Count:")
     print(len(embedded_chunks))
-
-    print()
-    print("First Chunk:")
-    print(embedded_chunks[0]["chunk_id"])
-    print(embedded_chunks[0]["section"])
     print()
     print(embedded_chunks[0]["embedding"][:10])
     print()
     print("Embedding Dimensions:", len(embedded_chunks[0]["embedding"]))
+    print()
+    print("Stored Chunks:", vector_store.count())
