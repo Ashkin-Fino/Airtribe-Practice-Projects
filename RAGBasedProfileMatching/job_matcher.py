@@ -523,18 +523,13 @@ class JobMatcher:
             jd_metadata=jd_metadata
         )
 
-        # Phase 11
         candidates = self.requirement_filter.filter_candidates(
             candidates=candidates,
             jd_metadata=jd_metadata
         )
 
-        # Phase 12
-        candidates = self.ranking_engine.compute_final_scores(
-            candidates
-        )
+        candidates = self.ranking_engine.compute_final_scores(candidates)
 
-        # Phase 13 + 14
         top_matches = []
         for candidate in candidates[:top_k]:
             reasoning_payload = self.reasoner.generate_reasoning(
@@ -549,10 +544,6 @@ class JobMatcher:
                 "match_category": candidate["match_category"],
                 "experience_years": candidate["experience_years"],
                 "education": candidate["education"],
-                "matched_sections": candidate["matched_sections"],
-                "matched_skills": reasoning_payload["matched_skills"],
-                "missing_skills": reasoning_payload["missing_skills"],
-                "relevant_excerpts": reasoning_payload["relevant_excerpts"],
                 "reasoning": reasoning_payload["reasoning"]
             })
 
