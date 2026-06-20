@@ -9,8 +9,8 @@ import chromadb
 from chromadb.config import Settings
 
 
-PROJECT_ROOT = Path(__file__).parent
-RESUME_DIR = PROJECT_ROOT / "resumes"
+PROJECT_ROOT = Path(__file__).resolve().parent
+RESUMES_DIR = PROJECT_ROOT / "resumes"
 CHROMA_DB_DIR = PROJECT_ROOT / "data" / "chroma_db"
 
 class ResumeLoader:
@@ -120,7 +120,7 @@ class ResumeLoader:
             raise ValueError(f"Provided path is not a directory: {directory}")
 
         resumes = []
-        for file_path in directory.iterdir():
+        for file_path in sorted(directory.iterdir()):
             if file_path.is_file() and (
                 file_path.suffix.lower() in self.SUPPORTED_EXTENSIONS
             ):
@@ -558,6 +558,20 @@ class ResumeRAGPipeline:
         return {
             "indexed_resumes": total_resumes,
             "indexed_chunks": total_chunks
+        }
+    
+    def index_resume(self, resume_path: str):
+        """
+        Load and index a single resume file into ChromaDB.
+        """
+        resume = self.loader.load_resume(resume_path)
+        embedded_chunks = self.process_resume(resume)
+        self.vector_store.add_documents(embedded_chunks)
+
+        return {
+            "indexed_resumes": 1,
+            "indexed_chunks": len(embedded_chunks),
+            "resume_name": resume["file_name"]
         }
 
 
