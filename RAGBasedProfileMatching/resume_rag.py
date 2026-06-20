@@ -108,15 +108,24 @@ class ResumeLoader:
         if extension == ".docx":
             return self.load_docx(file_path)
     
-    def load_resumes_from_directory(self, directory_path: str):
+    def load_resumes_from_directory(self, directory_path: str) -> list:
+        """
+        Load all supported resumes from a directory.
+        """
+
+        directory = Path(directory_path)
+        if not directory.exists():
+            raise FileNotFoundError(f"Resume directory not found: {directory}")
+        if not directory.is_dir():
+            raise ValueError(f"Provided path is not a directory: {directory}")
+
         resumes = []
-
-        for file_path in Path(directory_path).iterdir():
-
-            if file_path.suffix.lower() in self.SUPPORTED_EXTENSIONS:
-                resumes.append(
-                    self.load_resume(str(file_path))
-                )
+        for file_path in directory.iterdir():
+            if file_path.is_file() and (
+                file_path.suffix.lower() in self.SUPPORTED_EXTENSIONS
+            ):
+                resume = self.load_resume(str(file_path))
+                resumes.append(resume)
 
         return resumes
 
@@ -412,10 +421,24 @@ class VectorStore:
             name=self.COLLECTION_NAME
         )
 
-    def add_documents(self, embedded_chunks, metadata):
+    def add_documents(self, embedded_chunks: list):
         """
-        Store chunks in ChromaDB.
+        Store embedded chunks in ChromaDB.
+
+        Each chunk must already contain:
+        - chunk_id
+        - resume_name
+        - section
+        - text
+        - embedding
+        - candidate_name
+        - experience_years
+        - education
+        - skills
         """
+
+        if not embedded_chunks:
+            return
 
         ids = []
         documents = []
@@ -429,10 +452,10 @@ class VectorStore:
             metadatas.append({
                 "resume_name": chunk["resume_name"],
                 "section": chunk["section"],
-                "candidate_name": metadata["name"],
-                "experience_years": metadata["experience_years"],
-                "education": metadata["education"],
-                "skills": ",".join(metadata["skills"])
+                "candidate_name": chunk["candidate_name"],
+                "experience_years": chunk["experience_years"],
+                "education": chunk["education"],
+                "skills": ",".join(chunk["skills"])
             })
 
         self.collection.add(
@@ -454,37 +477,97 @@ class VectorStore:
 
         return results
 
+    def reset_collection(self):
+        """
+        Delete and recreate the collection.
+        Useful for testing/re-indexing.
+        """
+
+        try:
+            self.client.delete_collection(
+                name=self.COLLECTION_NAME
+            )
+        except Exception:
+            pass
+
+        self.collection = self.client.get_or_create_collection(
+            name=self.COLLECTION_NAME
+        )
+
 
 class ResumeRAGPipeline:
-    """Main ingestion pipeline."""
+    """
+    End-to-end resume indexing pipeline.
 
-    def index_resume(self, path: str):
-        raise NotImplementedError
+    Flow:
+        Resume file
+            -> Load
+            -> Extract metadata
+            -> Chunk
+            -> Embed
+            -> Store in ChromaDB
+    """
 
-    def index_directory(self, resume_folder: str):
-        raise NotImplementedError
+    def __init__(self):
+        self.loader = ResumeLoader()
+        self.extractor = MetadataExtractor()
+        self.chunker = ResumeChunker()
+        self.embedding_service = EmbeddingService()
+        self.vector_store = VectorStore()
+
+    def process_resume(self, resume: dict) -> list:
+        """
+        Process a single loaded resume and return embedded chunks
+        enriched with resume metadata.
+        """
+
+        metadata = self.extractor.extract(resume["content"])
+        chunks = self.chunker.chunk(
+            resume_text=resume["content"],
+            resume_name=resume["file_name"]
+        )
+
+        enriched_chunks = []
+        for chunk in chunks:
+            enriched_chunks.append({
+                **chunk,
+                "candidate_name": metadata["name"],
+                "experience_years": metadata["experience_years"],
+                "education": metadata["education"],
+                "skills": metadata["skills"]
+            })
+        embedded_chunks = (self.embedding_service.generate_embeddings(enriched_chunks))
+        return embedded_chunks
+
+    def index_directory(self, directory_path: str):
+        """
+        Load and index all resumes from a directory into ChromaDB.
+        """
+
+        resumes = self.loader.load_resumes_from_directory(directory_path)
+        total_resumes = 0
+        total_chunks = 0
+
+        for resume in resumes:
+            print(f"Indexing resume: {resume['file_name']}")
+            embedded_chunks = self.process_resume(resume)
+            self.vector_store.add_documents(embedded_chunks)
+            total_resumes += 1
+            total_chunks += len(embedded_chunks)
+
+        return {
+            "indexed_resumes": total_resumes,
+            "indexed_chunks": total_chunks
+        }
 
 
 if __name__ == "__main__":
+    pipeline = ResumeRAGPipeline()
+    pipeline.vector_store.reset_collection()
 
-    loader = ResumeLoader()
-    extractor = MetadataExtractor()
-    chunker = ResumeChunker()
-    embedding_service = EmbeddingService()
-    vector_store = VectorStore()
-
-    resume = loader.load_resumes_from_directory(str(RESUME_DIR))
-    metadata = extractor.extract(resume[0]["content"])
-    chunks = chunker.chunk(resume[0]["content"], resume_name=resume[0]["file_name"])
-    embedded_chunks = (embedding_service.generate_embeddings(chunks))
-    vector_store.add_documents(embedded_chunks, metadata)
-
-    print()
-    print("Chunk Count:")
-    print(len(embedded_chunks))
-    print()
-    print(embedded_chunks[0]["embedding"][:10])
-    print()
-    print("Embedding Dimensions:", len(embedded_chunks[0]["embedding"]))
-    print()
-    print("Stored Chunks:", vector_store.count())
+    result = pipeline.index_directory("{PROEJECT_DIR}/resumes")
+    
+    print("\nIndexing Complete")
+    print(f"Indexed Resumes: {result['indexed_resumes']}")
+    print(f"Indexed Chunks: {result['indexed_chunks']}")
+    print(f"Stored Chunks in ChromaDB: {pipeline.vector_store.count()}")
