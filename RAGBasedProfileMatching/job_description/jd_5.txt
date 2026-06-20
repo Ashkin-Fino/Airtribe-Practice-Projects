@@ -1,0 +1,27 @@
+Machine Learning Engineer
+
+We are looking for a Machine Learning Engineer to build, train, and deploy ML models for real-world applications.
+
+Responsibilities:
+- Develop machine learning models for prediction and classification tasks
+- Prepare and clean training data
+- Work with large datasets and perform feature engineering
+- Evaluate model performance and improve accuracy
+- Collaborate with software engineers to deploy models into applications
+
+Required Skills:
+- Python
+- Machine Learning
+- Scikit-learn
+- Pandas
+- NumPy
+- SQL
+- Model evaluation and feature engineering
+- Basic deep learning knowledge is a plus
+
+Experience Required:
+- 2+ years of experience in machine learning or data science
+- Experience building and testing ML models
+
+Education:
+- Bachelor’s degree in Computer Science, AI, Data Science, or related field

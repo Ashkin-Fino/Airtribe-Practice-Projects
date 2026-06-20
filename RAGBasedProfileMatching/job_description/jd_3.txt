@@ -1,0 +1,26 @@
+Java Spring Boot Developer
+
+We are hiring a Java Spring Boot Developer to build and maintain backend services for enterprise applications.
+
+Responsibilities:
+- Develop backend APIs and business logic using Java and Spring Boot
+- Work with relational databases and write optimized SQL queries
+- Build secure and scalable microservices
+- Collaborate with frontend, QA, and DevOps teams
+- Fix bugs and improve application performance
+
+Required Skills:
+- Java
+- Spring Boot
+- REST API
+- MySQL or PostgreSQL
+- Hibernate / JPA
+- Git
+- Docker
+
+Experience Required:
+- 3+ years of backend development experience
+- Strong knowledge of object-oriented programming and API development
+
+Education:
+- Bachelor’s degree in Computer Science or related field

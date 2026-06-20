@@ -1,0 +1,29 @@
+Name: Siddharth Rao
+Email: siddharth.rao@example.com
+Phone: +91 9847993588
+Location: Pune
+
+Professional Summary
+Data Scientist with 4 years of experience in software development, system design, debugging, and collaborating with cross-functional teams. Experienced in delivering production-ready solutions and improving application performance.
+
+Skills
+Python, Machine Learning, Scikit-learn, Pandas, NumPy, TensorFlow, SQL, NLP
+
+Experience
+Software Engineer at TechNova Solutions (2022 - 2024)
+Worked on backend services, API development, database optimization, and debugging production issues.
+Collaborated with product, QA, and frontend teams to deliver features on schedule.
+
+Associate Engineer at CodeCraft Labs (2020 - 2022)
+Supported feature development, testing, bug fixing, and internal tooling improvements.
+
+Projects
+- Built churn prediction model
+- Created resume classification and recommendation pipeline
+
+Education
+B.Sc in Computer Science, University of Kerala
+
+Certifications
+- AWS Cloud Practitioner
+- Python for Everybody
