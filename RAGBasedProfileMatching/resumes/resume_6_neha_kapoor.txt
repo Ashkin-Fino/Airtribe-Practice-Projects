@@ -1,0 +1,29 @@
+Name: Neha Kapoor
+Email: neha.kapoor@example.com
+Phone: +91 9847219967
+Location: Pune
+
+Professional Summary
+Python Backend Developer with 6 years of experience in software development, system design, debugging, and collaborating with cross-functional teams. Experienced in delivering production-ready solutions and improving application performance.
+
+Skills
+Python, Django, FastAPI, REST API, PostgreSQL, Docker, AWS, Git
+
+Experience
+Software Engineer at TechNova Solutions (2020 - 2024)
+Worked on backend services, API development, database optimization, and debugging production issues.
+Collaborated with product, QA, and frontend teams to deliver features on schedule.
+
+Associate Engineer at CodeCraft Labs (2016 - 2020)
+Supported feature development, testing, bug fixing, and internal tooling improvements.
+
+Projects
+- Built scalable REST APIs for an e-commerce platform
+- Integrated payment gateway and order tracking services
+
+Education
+B.Tech in Computer Science, Anna University
+
+Certifications
+- AWS Cloud Practitioner
+- Python for Everybody

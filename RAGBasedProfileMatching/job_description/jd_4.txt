@@ -1,0 +1,27 @@
+DevOps Engineer
+
+We are looking for a DevOps Engineer to automate deployments, manage cloud infrastructure, and improve CI/CD workflows.
+
+Responsibilities:
+- Build and maintain CI/CD pipelines
+- Deploy and monitor applications in AWS
+- Work with Docker and containerized applications
+- Manage Linux servers and troubleshoot deployment issues
+- Collaborate with development teams for release automation
+
+Required Skills:
+- AWS
+- Docker
+- Kubernetes
+- CI/CD
+- Linux
+- Terraform
+- GitHub Actions or Jenkins
+- Scripting in Python or Bash
+
+Experience Required:
+- 3+ years of DevOps or cloud engineering experience
+- Experience in deployment automation and infrastructure management
+
+Education:
+- Bachelor’s degree in Computer Science, IT, or related field

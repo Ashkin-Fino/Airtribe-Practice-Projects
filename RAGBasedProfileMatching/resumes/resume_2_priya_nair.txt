@@ -1,0 +1,29 @@
+Name: Priya Nair
+Email: priya.nair@example.com
+Phone: +91 9882997090
+Location: Coimbatore
+
+Professional Summary
+Java Spring Boot Developer with 8 years of experience in software development, system design, debugging, and collaborating with cross-functional teams. Experienced in delivering production-ready solutions and improving application performance.
+
+Skills
+Java, Spring Boot, Hibernate, MySQL, REST API, Docker, Git, AWS
+
+Experience
+Software Engineer at TechNova Solutions (2018 - 2024)
+Worked on backend services, API development, database optimization, and debugging production issues.
+Collaborated with product, QA, and frontend teams to deliver features on schedule.
+
+Associate Engineer at CodeCraft Labs (2012 - 2018)
+Supported feature development, testing, bug fixing, and internal tooling improvements.
+
+Projects
+- Developed microservices for customer onboarding
+- Implemented authentication and role-based access control
+
+Education
+B.E in Information Technology, VTU
+
+Certifications
+- AWS Cloud Practitioner
+- Python for Everybody

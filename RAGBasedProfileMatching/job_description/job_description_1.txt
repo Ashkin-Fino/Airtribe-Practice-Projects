@@ -1,0 +1,43 @@
+Senior Python Backend Developer
+
+We are looking for a Senior Python Backend Developer with strong experience in building scalable backend systems and RESTful APIs. The ideal candidate should have experience working with Python-based web frameworks, cloud platforms, databases, and modern deployment workflows.
+
+Key Responsibilities:
+- Design, develop, and maintain backend services and APIs for web applications
+- Build scalable microservices and integrate third-party services
+- Work closely with frontend developers, product managers, and QA teams
+- Optimize application performance, reliability, and maintainability
+- Write clean, modular, and testable code
+- Participate in code reviews and architecture discussions
+- Deploy and monitor backend applications in cloud environments
+
+Required Skills:
+- Strong proficiency in Python
+- Experience with Django or FastAPI
+- Good understanding of REST API development
+- Experience with SQL and relational databases such as PostgreSQL or MySQL
+- Familiarity with Git and version control workflows
+- Experience with Docker and containerized deployments
+- Hands-on experience with AWS services such as EC2, S3, Lambda, or RDS
+- Good understanding of object-oriented programming, data structures, and algorithms
+
+Preferred Skills:
+- Experience with microservices architecture
+- Knowledge of CI/CD pipelines
+- Familiarity with Redis, Celery, or message queues
+- Experience with unit testing and pytest
+- Exposure to Kubernetes is a plus
+
+Experience Required:
+- 4+ years of backend development experience
+- At least 3 years of professional Python development experience
+- Experience building production-grade APIs and backend systems
+
+Education:
+- Bachelor’s degree in Computer Science, Information Technology, or a related field
+- Master’s degree is a plus
+
+Nice to Have:
+- Experience working in product-based companies
+- Knowledge of system design and scalable application architecture
+- Familiarity with Agile development practices

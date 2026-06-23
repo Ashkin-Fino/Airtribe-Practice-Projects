@@ -1,0 +1,25 @@
+Data Analyst
+
+We are looking for a Data Analyst to work with business and product teams to analyze data and generate insights.
+
+Responsibilities:
+- Collect, clean, and analyze data from multiple sources
+- Create dashboards and reports for business stakeholders
+- Write SQL queries to extract and transform data
+- Perform trend analysis and identify business KPIs
+- Present findings clearly to non-technical teams
+
+Required Skills:
+- Python
+- SQL
+- Excel
+- Pandas
+- Power BI or Tableau
+- Basic statistics and data visualization
+
+Experience Required:
+- 2+ years of experience in data analysis
+- Experience working with business reports and dashboards
+
+Education:
+- Bachelor’s degree in Computer Science, Statistics, Mathematics, or related field

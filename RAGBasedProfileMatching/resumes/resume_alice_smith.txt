@@ -1,0 +1,38 @@
+Alice Smith
+Email: alice.smith@email.com
+Phone: +1-555-888-9999
+Location: Austin, USA
+
+Professional Summary:
+    Backend Developer with 5 years of experience developing enterprise applications using Java and Spring Boot. Experienced in cloud deployments and distributed systems.
+
+Skills:
+    - Java
+    - Spring Boot
+    - Spring Security
+    - Microservices
+    - MySQL
+    - Kubernetes
+    - AWS
+    - Jenkins
+
+Experience:
+    Senior Backend Developer
+    CloudAxis Technologies
+    2021 - Present
+        - Developed enterprise APIs using Spring Boot.
+        - Implemented authentication using Spring Security.
+        - Managed Kubernetes deployments on AWS.
+        - Designed scalable microservice architecture.
+
+    Software Engineer
+    Vertex Systems
+    2019 - 2021
+        - Built Java-based web applications.
+        - Developed CI/CD pipelines using Jenkins.
+        - Optimized SQL queries for large datasets.
+
+Education:
+    Bachelor of Engineering in Information Technology
+    Texas State University
+    2018
