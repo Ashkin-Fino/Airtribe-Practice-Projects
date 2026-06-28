@@ -1,0 +1,8 @@
+langgraph
+chromadb
+sentence-transformers
+pydantic
+typing_extensions
+pytest
+python-dotenv
+groq
