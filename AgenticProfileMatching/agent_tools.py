@@ -21,6 +21,7 @@ from candidate_models import (
     MatchResult,
 )
 from .insights import CandidateIntelligence
+from .comparison import CandidateComparisonEngine
 
 # Milestone 2
 from resume_rag import ResumeRAGPipeline
@@ -71,7 +72,7 @@ class AgentTools:
         self, job_description: str, top_k: int = DEFAULT_TOP_K
     ) -> MatchResult:
         """
-        Search and rank candidates.
+            Search and rank candidates.
         """
         try:
             requirements = self.extract_job_requirements(job_description)
@@ -79,6 +80,30 @@ class AgentTools:
             return MatchResult.from_job_matcher(raw_result, requirements)
         except Exception as exc:
             raise CandidateMatchingError(str(exc)) from exc
+        
+    def enrich_candidates(self, match_result: MatchResult) -> MatchResult:
+        """
+            Enrich every candidate with:
+            - Skill gap analysis
+            - Candidate summary
+            - Match reasoning
+            - Strengths / weaknesses
+            - Risk assessment
+        """
+
+        requirements = match_result.job_requirements
+
+        for candidate in match_result.candidates:
+            CandidateIntelligence.enrich(candidate, requirements)
+
+        return match_result
+        
+    def compare_candidates(self, match_result: MatchResult) -> MatchResult:
+        """
+        Compare the top-ranked candidates and generate
+        a recommendation.
+        """
+        return CandidateComparisonEngine.compare(match_result)
 
     # ==========================================================
     # Resume Indexing
@@ -227,24 +252,4 @@ class AgentTools:
             f"Experience: {candidate.experience_years} years. "
             f"Education: {candidate.education}."
         )
-
-    def enrich_candidates(self, match_result: MatchResult) -> MatchResult:
-        """
-        Enrich every candidate with:
-        - Skill gap analysis
-        - Candidate summary
-        - Match reasoning
-        - Strengths / weaknesses
-        - Risk assessment
-        """
-
-        requirements = match_result.job_requirements
-
-        for candidate in match_result.candidates:
-            CandidateIntelligence.enrich(
-                candidate,
-                requirements
-            )
-
-        return match_result
     

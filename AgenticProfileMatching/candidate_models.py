@@ -72,14 +72,12 @@ class Candidate:
     matched_skills: list[str] = field(default_factory=list)
     missing_skills: list[str] = field(default_factory=list)
 
-    # Useful for later phases
     reasoning: str = ""
     summary: str = ""
     strengths: list[str] = field(default_factory=list)
     weaknesses: list[str] = field(default_factory=list)
     risk_level: str = ""
 
-    # Extra information from Milestone 2 or future phases
     metadata: dict[str, Any] = field(default_factory=dict)
 
     @classmethod
@@ -121,6 +119,10 @@ class MatchResult:
     candidates: list[Candidate] = field(default_factory=list)
 
     total_candidates: int = 0
+
+    comparison: dict = field(default_factory=dict)
+
+    final_recommendation: str = ""
 
     @classmethod
     def from_job_matcher(

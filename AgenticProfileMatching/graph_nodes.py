@@ -27,6 +27,11 @@ def candidate_intelligence(state):
     state["reasoning"].append("Generated candidate intelligence.")
     return state
 
+def compare_candidates(state):
+    state["match_result"] = tools.compare_candidates(state["match_result"])
+    state["reasoning"].append("Compared top candidates.")
+    return state
+
 def generate_explanations(state):
     """
     Final graph node.

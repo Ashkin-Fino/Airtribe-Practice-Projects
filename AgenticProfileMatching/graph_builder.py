@@ -6,6 +6,7 @@ from .graph_nodes import (
     extract_requirements,
     match_candidates,
     candidate_intelligence,
+    compare_candidates,
     generate_explanations,
 )
 
@@ -32,6 +33,11 @@ def build_graph():
     )
 
     workflow.add_node(
+        "compare_candidates",
+        compare_candidates
+    )
+
+    workflow.add_node(
         "generate_explanations",
         generate_explanations
     )
@@ -55,6 +61,11 @@ def build_graph():
 
     workflow.add_edge(
         "candidate_intelligence",
+        "compare_candidates"
+    )
+
+    workflow.add_edge(
+        "compare_candidates",
         "generate_explanations"
     )
 
