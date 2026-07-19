@@ -1,6 +1,6 @@
 -- Schema for Theatre Table
 CREATE TABLE Theatre (
-    theatre_id INT AUTO_INCREMENT PRIMARY KEY,
+    theatre_id INT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     location VARCHAR(50) NOT NULL,
     address VARCHAR(200)
@@ -8,7 +8,7 @@ CREATE TABLE Theatre (
 
 -- Schema for Screen Table
 CREATE TABLE Screen (
-    screen_id INT AUTO_INCREMENT PRIMARY KEY,
+    screen_id INT PRIMARY KEY,
     theatre_id INT NOT NULL,
     name VARCHAR(20) NOT NULL,
     capacity INT NOT NULL,
@@ -18,7 +18,7 @@ CREATE TABLE Screen (
 
 -- Schema for Movie Table
 CREATE TABLE Movie (
-    movie_id INT AUTO_INCREMENT PRIMARY KEY,
+    movie_id INT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     duration INT NOT NULL,
     language VARCHAR(30)
@@ -26,7 +26,7 @@ CREATE TABLE Movie (
 
 -- Schema for Show Table
 CREATE TABLE Show (
-    show_id INT AUTO_INCREMENT PRIMARY KEY,
+    show_id INT PRIMARY KEY,
     movie_id INT NOT NULL,
     screen_id INT NOT NULL,
     date DATE NOT NULL,
