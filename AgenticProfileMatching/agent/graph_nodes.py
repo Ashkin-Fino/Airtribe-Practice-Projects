@@ -32,6 +32,19 @@ def compare_candidates(state):
     state["reasoning"].append("Compared top candidates.")
     return state
 
+def generate_interview_plan(state):
+    state["match_result"] = (tools.generate_interview_plan(state["match_result"]))
+    state["reasoning"].append("Generated interview plans.")
+    return state
+
+def build_report(state):
+    """
+    Generate the final hiring report.
+    """
+    state["report"] = tools.generate_report(state["match_result"])
+    state["reasoning"].append("Generated final hiring report.")
+    return state
+
 def generate_explanations(state):
     """
     Final graph node.

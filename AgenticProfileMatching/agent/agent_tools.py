@@ -20,8 +20,10 @@ from candidate_models import (
     JobRequirements,
     MatchResult,
 )
-from .insights import CandidateIntelligence
-from .comparison import CandidateComparisonEngine
+from agent.insights import CandidateIntelligence
+from agent.comparison import CandidateComparisonEngine
+from agent.interview import InterviewGenerationEngine
+from agent.report import HiringReportGenerator
 
 # Milestone 2
 from resume_rag import ResumeRAGPipeline
@@ -104,6 +106,19 @@ class AgentTools:
         a recommendation.
         """
         return CandidateComparisonEngine.compare(match_result)
+    
+    def generate_interview_plan(self, match_result: MatchResult) -> MatchResult:
+        """
+        Generate interview plans for all candidates.
+        """
+        return InterviewGenerationEngine.generate(match_result)
+    
+    def generate_report(self, match_result: MatchResult) -> dict:
+        """
+        Generate the final hiring report.
+        """
+
+        return HiringReportGenerator.build(match_result)
 
     # ==========================================================
     # Resume Indexing

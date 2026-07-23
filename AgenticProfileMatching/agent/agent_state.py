@@ -9,7 +9,6 @@ from candidate_models import (
 
 class AgentState(TypedDict):
     job_description: str
-    job_requirements: Optional[JobRequirements]
-    candidates: List[Candidate]
     match_result: Optional[MatchResult]
+    report: Optional[dict]
     reasoning: List[str]

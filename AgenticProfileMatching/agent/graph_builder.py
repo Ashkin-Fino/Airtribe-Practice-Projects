@@ -8,6 +8,8 @@ from .graph_nodes import (
     candidate_intelligence,
     compare_candidates,
     generate_explanations,
+    generate_interview_plan,
+    build_report,
 )
 
 
@@ -38,8 +40,18 @@ def build_graph():
     )
 
     workflow.add_node(
+        "generate_interview_plan",
+        generate_interview_plan
+    )
+
+    workflow.add_node(
         "generate_explanations",
         generate_explanations
+    )
+
+    workflow.add_node(
+        "build_report",
+        build_report
     )
 
     workflow.set_entry_point("load_job")
@@ -66,11 +78,21 @@ def build_graph():
 
     workflow.add_edge(
         "compare_candidates",
+        "generate_interview_plan"
+    )
+
+    workflow.add_edge(
+        "generate_interview_plan",
         "generate_explanations"
     )
 
     workflow.add_edge(
         "generate_explanations",
+        "build_report"
+    )
+
+    workflow.add_edge(
+        "build_report",
         END
     )
 

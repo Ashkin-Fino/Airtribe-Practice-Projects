@@ -115,14 +115,11 @@ class MatchResult:
     """
 
     job_requirements: JobRequirements
-
     candidates: list[Candidate] = field(default_factory=list)
-
     total_candidates: int = 0
-
     comparison: dict = field(default_factory=dict)
-
     final_recommendation: str = ""
+    interview_plan: dict = field(default_factory=dict)
 
     @classmethod
     def from_job_matcher(
