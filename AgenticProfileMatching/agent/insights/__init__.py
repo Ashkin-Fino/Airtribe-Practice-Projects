@@ -5,19 +5,10 @@ from .insights import CandidateInsightGenerator
 
 
 class CandidateIntelligence:
-
     @staticmethod
     def enrich(candidate, requirements):
-        candidate = SkillGapAnalyzer.analyze(
-            candidate,
-            requirements,
-        )
-
+        candidate = SkillGapAnalyzer.analyze(candidate, requirements,)
         candidate = CandidateSummaryGenerator.generate(candidate)
-
         candidate = ReasoningGenerator.generate(candidate)
-
         candidate = CandidateInsightGenerator.generate(candidate)
-
         return candidate
-    

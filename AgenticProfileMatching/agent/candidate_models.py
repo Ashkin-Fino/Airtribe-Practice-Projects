@@ -68,9 +68,14 @@ class Candidate:
     experience_years: int = 0
     education: str = ""
 
+    # Resume extracted skills
+    skills: list[str] = field(default_factory=list)
+
     # Matching details
     matched_skills: list[str] = field(default_factory=list)
     missing_skills: list[str] = field(default_factory=list)
+    extra_skills: list[str] = field(default_factory=list)
+    skill_coverage: float = 0.0
 
     reasoning: str = ""
     summary: str = ""
@@ -93,6 +98,7 @@ class Candidate:
             match_category=data.get("match_category", ""),
             experience_years=int(data.get("experience_years", 0)),
             education=data.get("education", ""),
+            skills=data.get("skills", []),
             matched_skills=data.get("matched_skills", []),
             missing_skills=data.get("missing_skills", []),
             reasoning=data.get("reasoning", ""),

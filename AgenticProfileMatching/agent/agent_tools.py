@@ -33,10 +33,10 @@ from RAGBasedProfileMatching.job_matcher import (
 )
 
 # Milestone 1
-from LLMPoweredFileSystem.modules.query_processor import QueryProcessor
-from LLMPoweredFileSystem.modules.file_tools import FileTools
+from LLMPoweredFileSystem.modules.query_processor import process_query
+from LLMPoweredFileSystem.modules.file_tools import search_files_for_keyword, summarize_file
 
-from exceptions import (
+from agent.exceptions import (
     AgentToolError,
     FileOperationError,
     CandidateMatchingError,
@@ -57,8 +57,9 @@ class AgentTools:
         self.pipeline = ResumeRAGPipeline()
         self.matcher = JobMatcher()
         self.jd_processor = JobDescriptionProcessor()
-        self.query_processor = QueryProcessor()
-        self.file_tools = FileTools()
+        self.query_processor = process_query
+        self.file_tools_search = search_files_for_keyword
+        self.file_tools_summarize = summarize_file
 
     def extract_job_requirements(self, job_description: str) -> JobRequirements:
         """
@@ -70,9 +71,7 @@ class AgentTools:
         except Exception as exc:
             raise AgentToolError(f"Unable to process job description: {exc}") from exc
 
-    def match_candidates(
-        self, job_description: str, top_k: int = DEFAULT_TOP_K
-    ) -> MatchResult:
+    def match_candidates(self, job_description: str, top_k: int = DEFAULT_TOP_K) -> MatchResult:
         """
             Search and rank candidates.
         """
@@ -81,7 +80,8 @@ class AgentTools:
             raw_result = self.matcher.match(job_description, top_k)
             return MatchResult.from_job_matcher(raw_result, requirements)
         except Exception as exc:
-            raise CandidateMatchingError(str(exc)) from exc
+            print(str(exc))
+            raise CandidateMatchingError(str(exc))
         
     def enrich_candidates(self, match_result: MatchResult) -> MatchResult:
         """
@@ -147,7 +147,7 @@ class AgentTools:
         Process a natural language query using Milestone 1.
         """
         try:
-            return self.query_processor.process(query)
+            return self.query_processor(query)
         except Exception as exc:
             raise AgentToolError(f"Query processing failed: {exc}") from exc
 
@@ -156,25 +156,16 @@ class AgentTools:
         Generic file reader (JD, resume, notes, etc.)
         """
         try:
-            return self.file_tools.read_file(file_path)
+            return self.file_tools_read(file_path)
         except Exception as exc:
             raise FileOperationError(f"File read failed: {exc}") from exc
-
-    def search_resume_files(self, keyword: str) -> list[str]:
-        """
-        Search resume files by keyword.
-        """
-        try:
-            return self.file_tools.search_files(keyword)
-        except Exception as exc:
-            raise FileOperationError(f"Resume search failed: {exc}") from exc
 
     def summarize_resume(self, resume_text: str) -> str:
         """
         Summarize a resume using the Milestone 1 LLM pipeline.
         """
         try:
-            return self.query_processor.summarize(resume_text)
+            return self.file_tools_summarize(resume_text)
         except Exception as exc:
             raise AgentToolError(f"Resume summarization failed: {exc}") from exc
 

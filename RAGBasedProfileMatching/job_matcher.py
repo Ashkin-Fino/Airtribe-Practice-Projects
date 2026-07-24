@@ -283,6 +283,7 @@ class HybridSearcher:
                 "skill_match_score": skill_match_score,
                 "experience_match_score": experience_match_score,
                 "education_match_score": education_match_score,
+                "skills": jd_metadata["skills"],
                 "matched_skills": matched_skills,
                 "missing_skills": missing_skills
             }
@@ -540,6 +541,7 @@ class JobMatcher:
             top_matches.append({
                 "candidate_name": candidate["candidate_name"],
                 "resume_name": candidate["resume_name"],
+                "skills": candidate.get("skills", []),
                 "final_score": candidate["final_score"],
                 "match_category": candidate["match_category"],
                 "experience_years": candidate["experience_years"],

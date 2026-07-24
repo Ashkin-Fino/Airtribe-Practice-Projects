@@ -9,14 +9,13 @@ def load_job(state):
 
 def extract_requirements(state):
     requirements = tools.extract_job_requirements(state["job_description"])
-    state["job_requirements"] = requirements
     state["reasoning"].append("Extracted structured job requirements.")
     return state
 
 def match_candidates(state):
-    candidates = tools.match_candidates(state["job_description"])
-    state["candidates"] = candidates
-    state["reasoning"].append(f"Retrieved {len(candidates)} candidates.")
+    match_result = tools.match_candidates(state["job_description"])
+    state["match_result"] = match_result
+    state["reasoning"].append(f"Retrieved {len(match_result.candidates)} candidates.")
     return state
 
 def candidate_intelligence(state):

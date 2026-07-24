@@ -1,4 +1,4 @@
-class AgentToolError:
+class AgentToolError(Exception):
     """
     Custom exception for errors related to agent tools.
     """

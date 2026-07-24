@@ -16,7 +16,7 @@ class SkillGapAnalyzer:
         Populate skill gap information for a candidate.
         """
         candidate_skills = {skill.lower().strip() for skill in candidate.skills}
-        required_skills = {skill.lower().strip() for skill in requirements.required_skills}
+        required_skills = {skill.lower().strip() for skill in requirements.skills}
         matched = sorted(candidate_skills & required_skills)
         missing = sorted(required_skills - candidate_skills)
         extra = sorted(candidate_skills - required_skills)

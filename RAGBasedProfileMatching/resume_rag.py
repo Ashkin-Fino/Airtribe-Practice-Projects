@@ -579,7 +579,7 @@ if __name__ == "__main__":
     pipeline = ResumeRAGPipeline()
     pipeline.vector_store.reset_collection()
 
-    result = pipeline.index_directory("{PROEJECT_DIR}/resumes")
+    result = pipeline.index_directory(r"C:\Users\rashk\Learning\Airtribe HomeWorks And Projects\RAGBasedProfileMatching\resumes")
     
     print("\nIndexing Complete")
     print(f"Indexed Resumes: {result['indexed_resumes']}")
