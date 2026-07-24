@@ -1,10 +1,6 @@
 from typing import TypedDict, List, Optional
 
-from candidate_models import (
-    Candidate,
-    JobRequirements,
-    MatchResult
-)
+from agent.candidate_models import MatchResult
 
 
 class AgentState(TypedDict):

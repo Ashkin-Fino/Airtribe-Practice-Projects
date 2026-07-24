@@ -14,8 +14,8 @@ Responsibilities
 
 from typing import Optional
 
-from config import DEFAULT_TOP_K
-from candidate_models import (
+from agent.config import DEFAULT_TOP_K
+from agent.candidate_models import (
     Candidate,
     JobRequirements,
     MatchResult,
@@ -26,15 +26,15 @@ from agent.interview import InterviewGenerationEngine
 from agent.report import HiringReportGenerator
 
 # Milestone 2
-from resume_rag import ResumeRAGPipeline
-from job_matcher import (
+from RAGBasedProfileMatching.resume_rag import ResumeRAGPipeline
+from RAGBasedProfileMatching.job_matcher import (
     JobMatcher,
     JobDescriptionProcessor,
 )
 
 # Milestone 1
-from modules.query_processor import QueryProcessor
-from modules.file_tools import FileTools
+from LLMPoweredFileSystem.modules.query_processor import QueryProcessor
+from LLMPoweredFileSystem.modules.file_tools import FileTools
 
 from exceptions import (
     AgentToolError,

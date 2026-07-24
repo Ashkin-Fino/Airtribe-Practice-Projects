@@ -2,12 +2,12 @@
 Interview Planner
 """
 
-from candidate_models import Candidate, JobRequirements
+from agent.candidate_models import Candidate, JobRequirements
 
-from .technical import TechnicalQuestionGenerator
-from .behavioral import BehavioralQuestionGenerator
-from .role_specific import RoleSpecificQuestionGenerator
-from .difficulty import DifficultyGrader
+from agent.interview.technical import TechnicalQuestionGenerator
+from agent.interview.behavioral import BehavioralQuestionGenerator
+from agent.interview.role_specific import RoleSpecificQuestionGenerator
+from agent.interview.difficulty import DifficultyGrader
 
 
 class InterviewPlanner:

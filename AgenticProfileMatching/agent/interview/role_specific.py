@@ -2,7 +2,7 @@
 Role Specific Questions
 """
 
-from candidate_models import Candidate, JobRequirements
+from agent.candidate_models import Candidate, JobRequirements
 
 
 class RoleSpecificQuestionGenerator:

@@ -23,7 +23,7 @@ import sys
 # Project Paths
 # ---------------------------------------------------------------------
 
-PROJECT_ROOT = Path(__file__).resolve().parent
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 WORKSPACE_ROOT = PROJECT_ROOT.parent
 

@@ -1,7 +1,7 @@
 from langgraph.graph import StateGraph, END
 
-from .agent_state import AgentState
-from .graph_nodes import (
+from agent.agent_state import AgentState
+from agent.graph_nodes import (
     load_job,
     extract_requirements,
     match_candidates,

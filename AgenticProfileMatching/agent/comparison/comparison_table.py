@@ -2,7 +2,7 @@
 Structured comparison table.
 """
 
-from candidate_models import Candidate
+from agent.candidate_models import Candidate
 
 
 class ComparisonTable:

@@ -1,7 +1,7 @@
 """
 Final Hiring Report Generator
 """
-from candidate_models import MatchResult
+from agent.candidate_models import MatchResult
 
 
 class HiringReportGenerator:

@@ -2,7 +2,7 @@
 Final Recommendation Engine
 """
 
-from candidate_models import Candidate
+from agent.candidate_models import Candidate
 
 
 class RecommendationEngine:

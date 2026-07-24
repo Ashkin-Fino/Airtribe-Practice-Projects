@@ -5,7 +5,7 @@ Creates structured strengths, weaknesses
 and overall risk assessment.
 """
 
-from candidate_models import Candidate
+from agent.candidate_models import Candidate
 
 
 class CandidateInsightGenerator:

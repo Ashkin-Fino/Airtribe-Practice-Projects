@@ -2,16 +2,14 @@
 Technical Interview Question Generator
 """
 
-from candidate_models import Candidate
+from agent.candidate_models import Candidate
 
 
 class TechnicalQuestionGenerator:
 
     @staticmethod
     def generate(candidate: Candidate) -> list[dict]:
-
         questions = []
-
         # Questions for required skills
         for skill in candidate.matched_skills:
             questions.append({

@@ -2,7 +2,7 @@
 Ranking Justification
 """
 
-from candidate_models import Candidate
+from agent.candidate_models import Candidate
 
 
 class RankingJustifier:
