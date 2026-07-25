@@ -146,20 +146,13 @@ def read_files_in_folder(folder_path: str) -> Dict[str, str]:
     return results
 
 
-def search_files_for_keyword(
-    folder_path: str,
-    keyword: str
-) -> List[str]:
+def search_files_for_keyword(folder_path: str, keyword: str) -> List[str]:
     """
         Searches files containing keyword.
     """
-
     files = list_supported_files(folder_path)
-
     matching_files = []
-
     keyword = keyword.lower()
-
     for file_path in files:
         try:
             content = extract_text(file_path)
