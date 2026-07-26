@@ -213,3 +213,6 @@ These defaults allow the application to run with minimal configuration while sti
 # Summary
 
 PayFlow demonstrates the core concepts of Spring Boot by building a simple REST API using a layered architecture. Spring Boot reduces boilerplate through embedded server support, auto-configuration, and production-ready defaults, allowing developers to focus on implementing application logic rather than configuring infrastructure.
+
+# Note
+    Answers to the questions, screenshots and conceptual write ups are present in /docs/write_up folder.
