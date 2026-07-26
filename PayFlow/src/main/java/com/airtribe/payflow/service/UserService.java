@@ -43,4 +43,9 @@ public class UserService {
     public Optional<User> findByUpiId(String upiId) {
         return userRepository.findByUpiId(upiId);
     }
+
+    // Find users with balance greater than <amount>
+    public List<User> findUsersWithBalanceGreaterThan(Double amount) {
+        return userRepository.findUsersWithBalanceGreaterThan(amount);
+    }
 }
