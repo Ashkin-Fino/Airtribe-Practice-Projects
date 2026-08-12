@@ -1,0 +1,66 @@
+Conceptual Write-Up:
+--------------------
+
+1. Request Lifecycle
+--------------------
+    When a client sends a POST /users request using curl, the request first reaches the
+    embedded Tomcat server running inside Spring Boot. The request is received by the
+    DispatcherServlet, which acts as the front controller and identifies the correct controller
+    method using HandlerMapping. The DispatcherServlet then uses HandlerAdapter to invoke the
+    matching controller method, such as createUser or registerUser. Before calling the method,
+    Spring converts the JSON request body into a Java User object using HttpMessageConverter,
+    and then passes it to the controller.
+
+2. Serialisation
+-----------------
+    When a JSON payload like {"name":"Priya","upiId":"priya@okaxis"} is sent to POST /users,
+    Spring Boot uses the Jackson ObjectMapper internally to deserialize the JSON into a
+    Java User object. The @RequestBody annotation tells Spring to read the HTTP request body
+    and convert it into the required Java object. Jackson maps JSON keys to Java fields
+    using their names, getters, and setters. If the JSON key is "upi_id" instead of "upiId",
+    Jackson will not map it automatically unless a custom mapping like @JsonProperty("upi_id") is
+    added, so the upiId field will remain null.
+
+3. Spring Boot Features
+-----------------------
+    The three major Spring Boot features are Auto Configuration,
+    Starter Dependencies, and Embedded Servers.
+
+    Auto Configuration: Spring Boot automatically configures required components. 
+        In PayFlow, Spring automatically creates the JpaRepository implementation beans
+        for UserRepository and TransactionRepository.
+    Starter Dependencies: Spring Boot starters provide required libraries together.
+        In PayFlow, spring-boot-starter-web provides Spring MVC, Jackson JSON support,
+        and embedded Tomcat required for creating REST APIs.
+    Embedded Server: Spring Boot includes an embedded Tomcat server, so PayFlow can run
+        directly using the main application class without requiring a separate application
+        server deployment.
+
+4. Spring vs Spring Boot
+------------------------
+
+    If PayFlow was developed using plain Spring, we would have to manually configure
+    dependencies, database connections, MVC configuration, component scanning,
+    and an external application server. We would need to write more configuration files
+    and manage the setup ourselves. Spring Boot simplifies this by providing auto configuration,
+    starter dependencies, embedded servers, and convention-based configuration.
+    It allows us to focus more on writing business logic rather than application setup.
+
+5. Stateless REST
+-----------------
+    A stateless REST API means that the server does not store any information about previous
+    client requests. Each request contains all the required information needed for processing,
+    and the server treats every request independently.
+    This is important when PayFlow runs on multiple servers behind a load balancer because any
+    request can be handled by any server without depending on previous server memory.
+    Stateless architecture improves scalability, reliability, and makes horizontal scaling easier.
+
+6. Persistence
+---------------
+    If transactions were stored in a Java List instead of the H2 database, all transaction
+    records would be stored only in the application's memory. When the server restarts,
+    the memory is cleared and all transaction data would be lost.
+    This is unacceptable for a payments application because transaction history, user balances,
+    and financial records must be permanently stored and recovered.
+    Using a database provides durability, consistency, and reliable data storage even after
+    application failures or restarts.

@@ -1,0 +1,33 @@
+Case 1 - With @RequestBody:
+
+    Console Output:
+        User{
+            id=null,
+            name='Ashkin',
+            upiId='ashkin@upi',
+            balance=5000
+        }
+
+    Explanation:
+        - The JSON request body is read by Spring.
+        - Jackson ObjectMapper converts the JSON into a Java User object.
+        - The populated User object is passed as the method argument.
+
+Case 2 - Without @RequestBody:
+
+    Console Output:
+        User{
+            id=null,
+            name=null,
+            upiId=null,
+            balance=null
+        }
+
+    Explanation:
+        - Without @RequestBody, Spring does not treat the incoming JSON payload
+          as the source for populating the Java object.
+        - Instead, it tries to bind values from request parameters, form data, or URL parameters.
+        - Since the request contains a JSON body and no matching request parameters exist,
+          Spring creates an empty User object and the fields remain null.
+        - The @RequestBody annotation tells Spring to read the HTTP request body, use Jackson to
+          deserialize the JSON content, and populate the corresponding fields of the Java object.

@@ -1,0 +1,53 @@
+3.3 Derived Query - findByUpiId()
+
+Generated SQL by JPA when calling "userRepository.findByUpiId("ashkin@upi");"
+
+Hibernate generates the following SQL:
+    select
+        u1_0.user_id,
+        u1_0.balance,
+        u1_0.name,
+        u1_0.phone_number,
+        u1_0.upi_id 
+    from
+        users u1_0 
+    where
+        u1_0.upi_id=?
+
+-------------------------------------------------------
+
+How JPA derives the query:
+
+Spring Data JPA follows a naming convention to automatically generate queries.
+
+The method "optional<User> findByUpiId(String upiId);" is interpreted as:
+    findBy → Perform a SELECT query.
+    UpiId → Match the entity field named upiId.
+
+JPA looks at the User entity and finds the property "private String upiId;" and creates the 
+equivalent SQL:
+    SELECT *
+    FROM user
+    WHERE upi_id = ?
+
+The repository method does not require any SQL implementation because Spring Data JPA creates the 
+query automatically during application startup.
+
+Meaning of the ? placeholder:
+
+The ? represents a parameter placeholder. Hibernate does not directly insert the value into the
+SQL query. Instead, it uses a prepared statement and binds the method argument to the placeholder.
+
+Example:
+
+Java method call "userRepository.findByUpiId("ashkin@upi");" internally becomes:
+    SELECT *
+    FROM user
+    WHERE upi_id = ?
+
+    where ? = "ashkin@upi"
+
+This approach provides:
+    - Better performance because prepared statements can be reused.
+    - Protection against SQL injection attacks.
+    - Cleaner separation between SQL structure and user input.

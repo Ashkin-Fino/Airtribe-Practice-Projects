@@ -1,0 +1,104 @@
+Comparison of Custom Query Approaches in Spring Data JPA:
+---------------------------------------------------------
+
+Spring Data JPA provides multiple ways to create custom database queries:
+    1. Derived Query Methods
+    2. @Query using JPQL
+    3. Native SQL Queries
+
+--------------------------------------------------
+1. Derived Query Methods
+--------------------------------------------------
+
+Example:
+    Repository method - Optional<User> findByUpiId(String upiId);
+
+Spring Data JPA automatically generates the query by analyzing the method name.
+
+Generated SQL:
+    SELECT *
+    FROM user
+    WHERE upi_id = ?;
+
+How it works:
+    Spring parses the method name "findByUpiId" into find + By + UpiId
+
+    "findBy" indicates that a SELECT query should be generated.
+    "UpiId" refers to the field name in the User entity.
+    Spring Data JPA searches for the matching entity field and creates the required query automatically.
+
+Advantages:
+    - Simple and easy to write.
+    - No SQL or JPQL knowledge is required.
+    - Database independent.
+    - Easy to maintain for simple queries.
+
+Disadvantages:
+    - Method names can become very long for complex queries.
+    Example:
+        "findByNameAndUpiIdAndBalanceGreaterThan()" can become difficult to read and maintain.
+
+
+--------------------------------------------------
+2. @Query using JPQL
+--------------------------------------------------
+
+Example:
+    @Query("SELECT u FROM User u WHERE u.balance > :amount")
+    List<User> findUsersWithBalanceGreaterThan(
+            @Param("amount") Double amount
+    );
+
+JPQL (Java Persistence Query Language) works with entity classes and their fields instead of database tables and columns.
+
+JPQL:
+    SELECT u 
+    FROM User u 
+    WHERE u.balance > :amount
+
+Hibernate converts the JPQL query into SQL internally:
+    SELECT *
+    FROM user
+    WHERE balance > ?;
+
+Advantages:
+    - Suitable for complex queries.
+    - More readable than long derived query methods.
+    - Database independent.
+    - Supports joins, filtering, sorting, and projections.
+    - Uses JPA abstraction.
+
+Disadvantages:
+    - Requires knowledge of JPQL syntax.
+    - Requires manual query writing and maintenance.
+
+
+--------------------------------------------------
+3. Native SQL Queries
+--------------------------------------------------
+
+Example:
+    @Query(
+        value = "SELECT * FROM user WHERE balance > ?",
+        nativeQuery = true
+    )
+    List<User> findUsersByBalance(Double amount);
+
+Native SQL queries directly use database-specific SQL syntax.
+
+Example:
+    SELECT *
+    FROM user
+    WHERE balance > 5000;
+
+Advantages:
+    - Provides complete control over SQL.
+    - Can use database-specific features.
+    - Useful for highly optimized queries.
+
+Disadvantages:
+    - Database dependent.
+    - Less portable.
+    - More difficult to maintain.
+    - Schema changes can break queries.
+    - Loses some benefits of JPA abstraction.
