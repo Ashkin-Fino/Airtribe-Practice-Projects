@@ -21,6 +21,7 @@ public class TaskRequest {
     private LocalDate dueDate;
 
     private Long assignedToId;
+    private Long teamId;
 
     public String getTitle() {
         return title;
@@ -52,5 +53,13 @@ public class TaskRequest {
 
     public void setAssignedToId(Long assignedToId) {
         this.assignedToId = assignedToId;
+    }
+
+    public Long getTeamId() {
+        return teamId;
+    }
+    
+    public void setTeamId(Long teamId) {
+        this.teamId = teamId;
     }
 }

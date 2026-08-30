@@ -22,6 +22,9 @@ public class TaskResponse {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
+    private Long teamId;
+    private String teamName;
+
     public TaskResponse(Task task) {
 
         this.id = task.getId();
@@ -40,6 +43,11 @@ public class TaskResponse {
 
         this.createdAt = task.getCreatedAt();
         this.updatedAt = task.getUpdatedAt();
+
+        if (task.getTeam() != null) {
+            this.teamId = task.getTeam().getId();
+            this.teamName = task.getTeam().getName();
+        }
     }
 
     public Long getId() {
@@ -84,5 +92,13 @@ public class TaskResponse {
 
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
+    }
+
+    public Long getTeamId() {
+        return teamId;
+    }
+    
+    public String getTeamName() {
+        return teamName;
     }
 }

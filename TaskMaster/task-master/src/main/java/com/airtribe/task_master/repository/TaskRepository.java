@@ -14,11 +14,14 @@ import java.util.Optional;
 public interface TaskRepository extends JpaRepository<Task, Long> {
 
     @Query("""
-        SELECT t
+        SELECT DISTINCT t
         FROM Task t
+        LEFT JOIN t.team team
+        LEFT JOIN TeamMember tm ON tm.team.id = team.id
         WHERE t.createdBy.id = :userId
             OR t.assignedTo.id = :userId
-        """)
+            OR tm.user.id = :userId
+    """)
     Page<Task> findRelevantTasks(@Param("userId") Long userId,
         Pageable pageable);
 

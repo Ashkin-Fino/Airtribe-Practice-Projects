@@ -5,9 +5,12 @@ import com.airtribe.task_master.dto.TaskRequest;
 import com.airtribe.task_master.dto.TaskResponse;
 import com.airtribe.task_master.dto.TaskStatusRequest;
 import com.airtribe.task_master.entity.Task;
+import com.airtribe.task_master.entity.Team;
 import com.airtribe.task_master.entity.User;
 import com.airtribe.task_master.enums.TaskStatus;
 import com.airtribe.task_master.repository.TaskRepository;
+import com.airtribe.task_master.repository.TeamMemberRepository;
+import com.airtribe.task_master.repository.TeamRepository;
 import com.airtribe.task_master.repository.UserRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,13 +22,19 @@ public class TaskService {
 
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
+    private final TeamRepository teamRepository;
+    private final TeamMemberRepository teamMemberRepository;
 
     public TaskService(
-            TaskRepository taskRepository,
-            UserRepository userRepository) {
+        TaskRepository taskRepository, 
+        UserRepository userRepository,
+        TeamRepository teamRepository,
+        TeamMemberRepository teamMemberRepository) {
 
         this.taskRepository = taskRepository;
         this.userRepository = userRepository;
+        this.teamRepository = teamRepository;
+        this.teamMemberRepository = teamMemberRepository;
     }
 
     @Transactional
@@ -53,13 +62,21 @@ public class TaskService {
             task.setAssignedTo(assignee);
         }
 
+        if (request.getTeamId() != null) {
+            Team team = teamRepository.findById(request.getTeamId())
+                .orElseThrow(() -> new IllegalArgumentException("Team not found"));
+            if (!teamMemberRepository.existsByTeamIdAndUserId(team.getId(), creator.getId())) {
+                throw new IllegalArgumentException("You are not a member of this team");
+            }
+            task.setTeam(team);
+        }
+
         Task savedTask =taskRepository.save(task);
         return new TaskResponse(savedTask);
     }
 
     @Transactional(readOnly = true)
     public TaskResponse getTask(Long taskId,String username) {
-
         Task task = getTaskEntity(taskId);
         validateAccess(task, username);
         return new TaskResponse(task);
@@ -68,16 +85,11 @@ public class TaskService {
     @Transactional(readOnly = true)
     public Page<TaskResponse> getAllTasks(String username,
         Pageable pageable) {
-
         User user = userRepository.findByUsername(username)
             .orElseThrow(() -> new IllegalArgumentException(
                 "User not found"
             ));
-
-        Page<Task> tasks = taskRepository.findRelevantTasks(
-            user.getId(), pageable
-        );
-        return tasks.map(TaskResponse::new);
+        return taskRepository.findRelevantTasks(user.getId(), pageable).map(TaskResponse::new);
     }
 
     @Transactional(readOnly = true)
