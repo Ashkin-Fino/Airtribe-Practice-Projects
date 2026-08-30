@@ -167,8 +167,9 @@ Endpoints:
 - POST /api/teams
 - GET /api/teams
 - GET /api/teams/{id}
+- GET /api/teams/{id}/members
 - POST /api/teams/{id}/invite
-- POST /api/teams/{id}/members
+- POST api/teams/invitations/{invitationId}/accept
 - DELETE /api/teams/{id}/members/{userId}
 
 Deliverables:

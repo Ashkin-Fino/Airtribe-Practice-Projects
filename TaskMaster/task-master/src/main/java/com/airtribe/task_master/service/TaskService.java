@@ -8,6 +8,9 @@ import com.airtribe.task_master.entity.Task;
 import com.airtribe.task_master.entity.Team;
 import com.airtribe.task_master.entity.User;
 import com.airtribe.task_master.enums.TaskStatus;
+import com.airtribe.task_master.exception.BadRequestException;
+import com.airtribe.task_master.exception.ResourceNotFoundException;
+import com.airtribe.task_master.exception.UnauthorizedException;
 import com.airtribe.task_master.repository.TaskRepository;
 import com.airtribe.task_master.repository.TeamMemberRepository;
 import com.airtribe.task_master.repository.TeamRepository;
@@ -24,24 +27,27 @@ public class TaskService {
     private final UserRepository userRepository;
     private final TeamRepository teamRepository;
     private final TeamMemberRepository teamMemberRepository;
+    private final TaskAccessService taskAccessService;
 
     public TaskService(
         TaskRepository taskRepository, 
         UserRepository userRepository,
         TeamRepository teamRepository,
-        TeamMemberRepository teamMemberRepository) {
+        TeamMemberRepository teamMemberRepository,
+        TaskAccessService taskAccessService) {
 
         this.taskRepository = taskRepository;
         this.userRepository = userRepository;
         this.teamRepository = teamRepository;
         this.teamMemberRepository = teamMemberRepository;
+        this.taskAccessService = taskAccessService;
     }
 
     @Transactional
     public TaskResponse createTask(String username, TaskRequest request) {
 
         User creator = userRepository.findByUsername(username)
-            .orElseThrow(() -> new IllegalArgumentException(
+            .orElseThrow(() -> new ResourceNotFoundException(
                 "User not found"
             ));
 
@@ -57,16 +63,16 @@ public class TaskService {
         if (request.getAssignedToId() != null) {
             User assignee = userRepository.findById(request
                 .getAssignedToId()).orElseThrow(() ->
-                    new IllegalArgumentException("Assignee not found")
+                    new ResourceNotFoundException("Assignee not found")
                 );
             task.setAssignedTo(assignee);
         }
 
         if (request.getTeamId() != null) {
             Team team = teamRepository.findById(request.getTeamId())
-                .orElseThrow(() -> new IllegalArgumentException("Team not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Team not found"));
             if (!teamMemberRepository.existsByTeamIdAndUserId(team.getId(), creator.getId())) {
-                throw new IllegalArgumentException("You are not a member of this team");
+                throw new UnauthorizedException("You are not a member of this team");
             }
             task.setTeam(team);
         }
@@ -78,7 +84,11 @@ public class TaskService {
     @Transactional(readOnly = true)
     public TaskResponse getTask(Long taskId,String username) {
         Task task = getTaskEntity(taskId);
-        validateAccess(task, username);
+        User user = userRepository.findByUsername(username)
+            .orElseThrow(() -> new ResourceNotFoundException(
+                "User not found"
+            ));
+        taskAccessService.requireTaskAccess(task, user.getId());
         return new TaskResponse(task);
     }
 
@@ -86,7 +96,7 @@ public class TaskService {
     public Page<TaskResponse> getAllTasks(String username,
         Pageable pageable) {
         User user = userRepository.findByUsername(username)
-            .orElseThrow(() -> new IllegalArgumentException(
+            .orElseThrow(() -> new ResourceNotFoundException(
                 "User not found"
             ));
         return taskRepository.findRelevantTasks(user.getId(), pageable).map(TaskResponse::new);
@@ -97,7 +107,7 @@ public class TaskService {
         Pageable pageable) {
 
         User user = userRepository.findByUsername(username)
-            .orElseThrow(() -> new IllegalArgumentException(
+            .orElseThrow(() -> new ResourceNotFoundException(
                 "User not found"
             ));
 
@@ -121,7 +131,7 @@ public class TaskService {
         if (request.getAssignedToId() != null) {
             User assignee = userRepository.findById(request
                 .getAssignedToId()).orElseThrow(() ->
-                    new IllegalArgumentException("Assignee not found")
+                    new ResourceNotFoundException("Assignee not found")
                 );
             task.setAssignedTo(assignee);
         } else {
@@ -136,7 +146,11 @@ public class TaskService {
         TaskStatusRequest request) {
 
         Task task = getTaskEntity(taskId);
-        validateAccess(task, username);
+        User user = userRepository.findByUsername(username)
+            .orElseThrow(() -> new ResourceNotFoundException(
+                "User not found"
+            ));
+        taskAccessService.requireTaskAccess(task, user.getId());
         task.setStatus(request.getStatus());
         return new TaskResponse(taskRepository.save(task));
     }
@@ -153,12 +167,12 @@ public class TaskService {
             Pageable pageable) {
 
         User user = userRepository.findByUsername(username).orElseThrow(() -> 
-            new IllegalArgumentException("User not found")
+            new ResourceNotFoundException("User not found")
         );
 
         if (filter.getFromDate() != null && filter.getToDate() != null
             && filter.getFromDate().isAfter(filter.getToDate())) {
-            throw new IllegalArgumentException("fromDate cannot be after toDate");
+            throw new BadRequestException("fromDate cannot be after toDate");
         }
 
         Page<Task> tasks = taskRepository.searchTasks(
@@ -175,30 +189,13 @@ public class TaskService {
 
     private Task getTaskEntity(Long taskId) {
         return taskRepository.findById(taskId).orElseThrow(() ->
-            new IllegalArgumentException("Task not found")
+            new ResourceNotFoundException("Task not found")
         );
     }
 
     private void validateOwnership(Task task, String username) {
         if (!task.getCreatedBy().getUsername().equals(username)) {
-            throw new IllegalArgumentException(
-                "You are not authorized to modify this task"
-            );
-        }
-    }
-
-    private void validateAccess(Task task, String username) {
-        boolean creator = task.getCreatedBy().getUsername()
-            .equals(username);
-
-        boolean assignee = task.getAssignedTo() != null 
-            && task.getAssignedTo().getUsername()
-            .equals(username);
-
-        if (!creator && !assignee) {
-            throw new IllegalArgumentException(
-                "You are not authorized to access this task"
-            );
+            throw new UnauthorizedException("You are not authorized to modify this task");
         }
     }
 }

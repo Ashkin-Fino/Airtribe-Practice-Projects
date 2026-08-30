@@ -6,6 +6,7 @@ import com.airtribe.task_master.dto.TaskResponse;
 import com.airtribe.task_master.dto.TaskStatusRequest;
 import com.airtribe.task_master.service.TaskService;
 import com.airtribe.task_master.enums.TaskStatus;
+import com.airtribe.task_master.exception.BadRequestException;
 
 import java.time.LocalDate;
 import jakarta.validation.Valid;
@@ -113,11 +114,11 @@ public class TaskController {
     private Pageable createPageable(int page, int size, String sortBy, String direction) {
 
         if (page < 0) {
-            throw new IllegalArgumentException("page must be >= 0");
+            throw new BadRequestException("page must be >= 0");
         }
 
         if (size <= 0 || size > 100) {
-            throw new IllegalArgumentException("size must be between 1 and 100");
+            throw new BadRequestException("size must be between 1 and 100");
         }
 
         Sort.Direction sortDirection = direction.equalsIgnoreCase("asc") 

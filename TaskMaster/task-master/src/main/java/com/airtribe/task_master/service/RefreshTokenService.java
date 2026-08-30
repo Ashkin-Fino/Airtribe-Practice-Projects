@@ -2,6 +2,7 @@ package com.airtribe.task_master.service;
 
 import com.airtribe.task_master.entity.RefreshToken;
 import com.airtribe.task_master.entity.User;
+import com.airtribe.task_master.exception.BadRequestException;
 import com.airtribe.task_master.repository.RefreshTokenRepository;
 import com.airtribe.task_master.security.JwtService;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -47,18 +48,18 @@ public class RefreshTokenService {
     public RefreshToken validateRefreshToken(String token) {
 
         RefreshToken refreshToken = refreshTokenRepository.findByToken(token)
-            .orElseThrow(() -> new IllegalArgumentException(
+            .orElseThrow(() -> new BadRequestException(
                 "Invalid refresh token"
             ));
 
         if (refreshToken.isRevoked()) {
-            throw new IllegalArgumentException(
+            throw new BadRequestException(
                 "Refresh token has been revoked"
             );
         }
 
         if (refreshToken.getExpiryDate().isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException(
+            throw new BadRequestException(
                 "Refresh token has expired"
             );
         }

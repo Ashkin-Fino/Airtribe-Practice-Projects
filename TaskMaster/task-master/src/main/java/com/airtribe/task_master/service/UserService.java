@@ -3,6 +3,8 @@ package com.airtribe.task_master.service;
 import com.airtribe.task_master.dto.RegisterRequest;
 import com.airtribe.task_master.dto.UserDto;
 import com.airtribe.task_master.entity.User;
+import com.airtribe.task_master.exception.BadRequestException;
+import com.airtribe.task_master.exception.ResourceNotFoundException;
 import com.airtribe.task_master.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -22,10 +24,10 @@ public class UserService {
     @Transactional
     public UserDto register(RegisterRequest request) {
         if (userRepository.existsByUsername(request.getUsername())) {
-            throw new IllegalArgumentException("Username already exists");
+            throw new BadRequestException("Username already exists");
         }
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new IllegalArgumentException("Email already exists");
+            throw new BadRequestException("Email already exists");
         }
 
         User user = new User();
@@ -44,7 +46,7 @@ public class UserService {
     @Transactional(readOnly = true)
     public UserDto getProfile(String username) {
         User user = userRepository.findByUsername(username)
-            .orElseThrow(() ->new IllegalArgumentException("User not found"));
+            .orElseThrow(() ->new ResourceNotFoundException("User not found"));
         return new UserDto(user);
     }
 
@@ -52,10 +54,10 @@ public class UserService {
     public UserDto updateProfile(String username, String email,
         String firstName, String lastName) {
         User user = userRepository.findByUsername(username)
-            .orElseThrow(() -> new IllegalArgumentException("User not found"));
+            .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         if (!user.getEmail().equals(email) && userRepository.existsByEmail(email)) {
-            throw new IllegalArgumentException("Email already exists");
+            throw new BadRequestException("Email already exists");
         }
         
         user.setEmail(email);

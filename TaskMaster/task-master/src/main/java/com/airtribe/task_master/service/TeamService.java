@@ -7,6 +7,9 @@ import com.airtribe.task_master.entity.Team;
 import com.airtribe.task_master.entity.TeamInvitation;
 import com.airtribe.task_master.entity.TeamMember;
 import com.airtribe.task_master.entity.User;
+import com.airtribe.task_master.exception.BadRequestException;
+import com.airtribe.task_master.exception.ResourceNotFoundException;
+import com.airtribe.task_master.exception.UnauthorizedException;
 import com.airtribe.task_master.repository.TeamInvitationRepository;
 import com.airtribe.task_master.repository.TeamMemberRepository;
 import com.airtribe.task_master.repository.TeamRepository;
@@ -92,16 +95,16 @@ public class TeamService {
         validateMembership(teamId, inviter.getId());
 
         User invitedUser = userRepository.findById(invitedUserId).orElseThrow(() ->
-            new IllegalArgumentException("Invited user not found")
+            new ResourceNotFoundException("Invited user not found")
         );
 
         if (teamMemberRepository.existsByTeamIdAndUserId(teamId, invitedUserId)) {
-            throw new IllegalArgumentException("User is already a team member");
+            throw new BadRequestException("User is already a team member");
         }
 
         if (invitationRepository.existsByTeamIdAndInvitedUserIdAndAcceptedFalseAndRevokedFalse(
             teamId, invitedUserId)) {
-            throw new IllegalArgumentException("Active invitation already exists");
+            throw new BadRequestException("Active invitation already exists");
         }
 
         TeamInvitation invitation = new TeamInvitation();
@@ -121,19 +124,19 @@ public class TeamService {
 
         TeamInvitation invitation =invitationRepository
             .findByIdAndInvitedUserId(invitationId, user.getId())
-            .orElseThrow(() -> new IllegalArgumentException("Invitation not found")
+            .orElseThrow(() -> new ResourceNotFoundException("Invitation not found")
             );
 
         if (invitation.isAccepted()) {
-            throw new IllegalArgumentException("Invitation already accepted");
+            throw new BadRequestException("Invitation already accepted");
         }
 
         if (invitation.isRevoked()) {
-            throw new IllegalArgumentException("Invitation has been revoked");
+            throw new BadRequestException("Invitation has been revoked");
         }
 
         if (invitation.getExpiresAt().isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException("Invitation has expired");
+            throw new BadRequestException("Invitation has expired");
         }
 
         if (!teamMemberRepository.existsByTeamIdAndUserId(invitation.getTeam().getId(), user.getId())) {
@@ -152,11 +155,11 @@ public class TeamService {
         User requester = getUser(username);
 
         if (!team.getCreatedBy().getId().equals(requester.getId())) {
-            throw new IllegalArgumentException("Only the team creator can remove members");
+            throw new UnauthorizedException("Only the team creator can remove members");
         }
 
         if (team.getCreatedBy().getId().equals(userId)) {
-            throw new IllegalArgumentException("Team creator cannot be removed");
+            throw new BadRequestException("Team creator cannot be removed");
         }
 
         teamMemberRepository.deleteByTeamIdAndUserId(teamId, userId);
@@ -164,17 +167,17 @@ public class TeamService {
 
     private Team getTeamEntity(Long teamId) {
         return teamRepository.findById(teamId)
-            .orElseThrow(() -> new IllegalArgumentException("Team not found"));
+            .orElseThrow(() -> new ResourceNotFoundException("Team not found"));
     }
 
     private User getUser(String username) {
         return userRepository.findByUsername(username)
-            .orElseThrow(() -> new IllegalArgumentException("User not found"));
+            .orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
 
     private void validateMembership(Long teamId, Long userId) {
         if (!teamMemberRepository.existsByTeamIdAndUserId(teamId, userId)) {
-            throw new IllegalArgumentException("You are not a member of this team");
+            throw new UnauthorizedException("You are not a member of this team");
         }
     }
 }

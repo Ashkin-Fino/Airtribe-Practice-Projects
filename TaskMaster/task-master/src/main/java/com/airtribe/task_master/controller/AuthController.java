@@ -7,6 +7,7 @@ import com.airtribe.task_master.dto.RegisterRequest;
 import com.airtribe.task_master.dto.UserDto;
 import com.airtribe.task_master.entity.RefreshToken;
 import com.airtribe.task_master.entity.User;
+import com.airtribe.task_master.exception.ResourceNotFoundException;
 import com.airtribe.task_master.repository.UserRepository;
 import com.airtribe.task_master.security.JwtService;
 import com.airtribe.task_master.service.RefreshTokenService;
@@ -59,7 +60,7 @@ public class AuthController {
         String username = authentication.getName();
 
         User user = userRepository.findByUsername(username)
-            .orElseThrow(() -> new IllegalArgumentException("User not found"));
+            .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         String accessToken = jwtService.generateAccessToken(username);
