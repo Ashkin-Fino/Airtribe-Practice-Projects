@@ -25,17 +25,17 @@ The application provides secure user authentication, task management, search/fil
 
 ## Technology Stack
 
-| Technology | Purpose |
-|---|---|
-| Java | Backend language |
-| Spring Boot | Application framework |
-| Spring Web | REST APIs |
-| Spring Data JPA | Persistence layer |
-| Spring Security | Authentication and authorization |
-| JWT | Stateless API authentication |
-| PostgreSQL | Relational database |
-| Maven Wrapper | Build and dependency management |
-| Local filesystem | MVP attachment storage |
+| Technology       | Purpose                          |
+|------------------|----------------------------------|
+|Java              | Backend language                 |
+| Spring Boot      | Application framework            |
+| Spring Web       | REST APIs                        |
+| Spring Data JPA  | Persistence layer                |
+| Spring Security  | Authentication and authorization |
+| JWT              | Stateless API authentication     |
+| PostgreSQL       | Relational database              |
+| Maven Wrapper    | Build and dependency management  |
+| Local filesystem | MVP attachment storage           |
 
 The original design specifies Java 17+, Spring Boot 3.x, Spring Web, Spring Data JPA, Spring Security, PostgreSQL, JWT, validation, and local filesystem storage for the MVP.
 
