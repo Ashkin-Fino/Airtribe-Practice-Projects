@@ -3,7 +3,7 @@ from pathlib import Path
 import pytest
 
 # Importing the module requires the MCP SDK. Install requirements.txt first.
-from filesystem_mcp_server import (
+from mcp_file_server import (
     extract_text,
     list_supported_files,
     resolve_path,

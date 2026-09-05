@@ -1,261 +1,156 @@
-"""
-Agent Tools
+from pathlib import Path
+from typing import Any
 
-This module acts as the integration layer between Milestone 3 and the
-previous milestones.
+from agent.config import DEFAULT_TOP_K, configure_imports
 
-Responsibilities
-----------------
-- Reuse Milestone 1 (LLM File System)
-- Reuse Milestone 2 (Resume RAG)
-- Hide implementation details from the LangGraph agent
-- Return canonical Candidate and MatchResult models
-"""
+# The milestone projects live beside AgenticProfileMatching.
+# Configure their import paths before importing Milestone 2 modules.
+configure_imports()
 
-from typing import Optional
-
-from agent.config import DEFAULT_TOP_K
-from agent.candidate_models import (
-    Candidate,
-    JobRequirements,
-    MatchResult,
-)
-from agent.insights import CandidateIntelligence
-from agent.comparison import CandidateComparisonEngine
-from agent.interview import InterviewGenerationEngine
-from agent.report import HiringReportGenerator
-
-# Milestone 2
 from RAGBasedProfileMatching.resume_rag import ResumeRAGPipeline
 from RAGBasedProfileMatching.job_matcher import (
     JobMatcher,
     JobDescriptionProcessor,
 )
 
-# Milestone 1
-from LLMPoweredFileSystem.modules.query_processor import process_query
-from LLMPoweredFileSystem.modules.file_tools import search_files_for_keyword, summarize_file
-
-from agent.exceptions import (
-    AgentToolError,
-    FileOperationError,
-    CandidateMatchingError,
-)
+from agent.mcp_filesystem_client import MCPFileSystemClient
 
 
 class AgentTools:
-    """
-    Facade over Milestone 1 and Milestone 2.
-
-    LangGraph nodes should ONLY communicate with this class.
-
-    They should never directly import classes from
-    milestone1 or milestone2.
-    """
+    """Integration layer between the LangGraph agent and project services."""
 
     def __init__(self):
+        self.filesystem = MCPFileSystemClient()
         self.pipeline = ResumeRAGPipeline()
         self.matcher = JobMatcher()
-        self.jd_processor = JobDescriptionProcessor()
-        self.query_processor = process_query
-        self.file_tools_search = search_files_for_keyword
-        self.file_tools_summarize = summarize_file
+        self.job_processor = JobDescriptionProcessor()
 
-    def extract_job_requirements(self, job_description: str) -> JobRequirements:
-        """
-        Convert a raw Job Description into structured requirements.
-        """
-        try:
-            result = self.jd_processor.process(job_description)
-            return JobRequirements.from_dict(result)
-        except Exception as exc:
-            raise AgentToolError(f"Unable to process job description: {exc}") from exc
+    # ------------------------------------------------------------------
+    # MCP filesystem operations
+    # ------------------------------------------------------------------
 
-    def match_candidates(self, job_description: str, top_k: int = DEFAULT_TOP_K) -> MatchResult:
-        """
-            Search and rank candidates.
-        """
-        try:
-            requirements = self.extract_job_requirements(job_description)
-            raw_result = self.matcher.match(job_description, top_k)
-            return MatchResult.from_job_matcher(raw_result, requirements)
-        except Exception as exc:
-            print(str(exc))
-            raise CandidateMatchingError(str(exc))
-        
-    def enrich_candidates(self, match_result: MatchResult) -> MatchResult:
-        """
-            Enrich every candidate with:
-            - Skill gap analysis
-            - Candidate summary
-            - Match reasoning
-            - Strengths / weaknesses
-            - Risk assessment
-        """
-
-        requirements = match_result.job_requirements
-
-        for candidate in match_result.candidates:
-            CandidateIntelligence.enrich(candidate, requirements)
-
-        return match_result
-        
-    def compare_candidates(self, match_result: MatchResult) -> MatchResult:
-        """
-        Compare the top-ranked candidates and generate
-        a recommendation.
-        """
-        return CandidateComparisonEngine.compare(match_result)
-    
-    def generate_interview_plan(self, match_result: MatchResult) -> MatchResult:
-        """
-        Generate interview plans for all candidates.
-        """
-        return InterviewGenerationEngine.generate(match_result)
-    
-    def generate_report(self, match_result: MatchResult) -> dict:
-        """
-        Generate the final hiring report.
-        """
-
-        return HiringReportGenerator.build(match_result)
-
-    # ==========================================================
-    # Resume Indexing
-    # ==========================================================
-
-    def index_resume(self, resume_path: str) -> dict:
-        """
-        Index a single resume into the vector database.
-        """
-        return self.pipeline.index_resume(resume_path)
-
-    def index_resume_directory(self, directory: str) -> dict:
-        """
-        Index every supported resume in a directory.
-        """
-        return self.pipeline.index_directory(directory)
-
-    def reset_vector_database(self) -> None:
-        """
-        Delete all indexed resumes.
-        """
-        self.pipeline.vector_store.reset_collection()
-
-    def process_query(self, query: str) -> str:
-        """
-        Process a natural language query using Milestone 1.
-        """
-        try:
-            return self.query_processor(query)
-        except Exception as exc:
-            raise AgentToolError(f"Query processing failed: {exc}") from exc
+    def discover_filesystem(self) -> dict[str, Any]:
+        return self.filesystem.discover()
 
     def read_file(self, file_path: str) -> str:
-        """
-        Generic file reader (JD, resume, notes, etc.)
-        """
-        try:
-            return self.file_tools_read(file_path)
-        except Exception as exc:
-            raise FileOperationError(f"File read failed: {exc}") from exc
+        return self.filesystem.read_file(file_path)
 
-    def summarize_resume(self, resume_text: str) -> str:
-        """
-        Summarize a resume using the Milestone 1 LLM pipeline.
-        """
-        try:
-            return self.file_tools_summarize(resume_text)
-        except Exception as exc:
-            raise AgentToolError(f"Resume summarization failed: {exc}") from exc
+    def search_resume_files(
+        self,
+        directory: str,
+        keyword: str,
+    ) -> list[dict[str, Any]]:
+        return self.filesystem.search_files(directory, keyword)
 
-    # ==========================================================
-    # Candidate Utilities
-    # ==========================================================
+    def summarize_resume(self, resume_path: str) -> str:
+        result = self.filesystem.summarize_file(resume_path)
 
-    def get_top_candidate(self, match_result: MatchResult) -> Optional[Candidate]:
-        """
-        Returns the highest ranked candidate.
-        """
-        if not match_result.candidates:
-            return None
+        if isinstance(result, dict):
+            return str(
+                result.get("summary")
+                or result.get("content")
+                or result
+            )
 
-        return max(
-            match_result.candidates,
-            key=lambda c: c.final_score
+        return str(result)
+
+    def generate_summary_file(
+        self,
+        file_path: str,
+        output_path: str | None = None,
+    ) -> dict[str, Any]:
+        return self.filesystem.generate_summary_file(
+            file_path,
+            output_path,
         )
 
-    def filter_candidates_by_score(
+    def batch_process(
         self,
-        match_result: MatchResult,
-        min_score: float = 60.0
-    ) -> list[Candidate]:
-        """
-        Return candidates above a minimum score.
-        """
-        return [
-            candidate
-            for candidate in match_result.candidates
-            if candidate.final_score >= min_score
-        ]
+        file_paths: list[str],
+        operation: str = "read",
+    ) -> list[dict[str, Any]]:
+        return self.filesystem.batch_process(file_paths, operation)
 
-    def group_candidates_by_category(
+    def watch_directory(
         self,
-        match_result: MatchResult
-    ) -> dict[str, list[Candidate]]:
-        """
-        Group candidates by match category.
-        """
-        grouped: dict[str, list[Candidate]] = {}
+        directory: str,
+        duration_seconds: int = 30,
+        poll_interval_seconds: int = 2,
+    ) -> list[dict[str, Any]]:
+        return self.filesystem.watch_directory(
+            directory,
+            duration_seconds,
+            poll_interval_seconds,
+        )
 
-        for candidate in match_result.candidates:
-            grouped.setdefault(
-                candidate.match_category,
-                []
-            ).append(candidate)
+    # ------------------------------------------------------------------
+    # Resume indexing
+    # ------------------------------------------------------------------
 
-        return grouped
+    def index_resume(self, resume_path: str) -> Any:
+        # Validate/read through MCP first. The RAG pipeline remains the
+        # Milestone 2 component responsible for embedding/indexing.
+        self.filesystem.read_file(resume_path)
+        return self.pipeline.index_resume(resume_path)
 
-    # ==========================================================
-    # Debug / Inspection Utilities
-    # ==========================================================
+    def index_resume_directory(self, directory: str) -> list[Any]:
+        files = self.filesystem.list_files(directory)
+        results = []
 
-    def debug_match_result(
-        self,
-        match_result: MatchResult
-    ) -> dict:
-        """
-        Returns a debug-friendly structure.
-        """
-        return {
-            "total_candidates": match_result.total_candidates,
-            "top_scores": [
-                {
-                    "name": c.candidate_name,
-                    "score": c.final_score,
-                    "category": c.match_category,
-                }
-                for c in sorted(
-                    match_result.candidates,
-                    key=lambda x: x.final_score,
-                    reverse=True
+        for metadata in files:
+            resume_path = metadata["path"]
+            try:
+                self.filesystem.read_file(resume_path)
+                results.append(
+                    self.pipeline.index_resume(resume_path)
                 )
-            ],
-        }
+            except Exception as exc:
+                results.append(
+                    {
+                        "path": resume_path,
+                        "status": "error",
+                        "error": str(exc),
+                    }
+                )
 
-    def explain_candidate(
+        return results
+
+    # ------------------------------------------------------------------
+    # Agent matching operations
+    # ------------------------------------------------------------------
+
+    def extract_job_requirements(self, job_description: str) -> Any:
+        return self.job_processor.extract_requirements(job_description)
+
+    def match_candidates(
         self,
-        candidate: Candidate
-    ) -> str:
-        """
-        Human-readable explanation for CLI/UI.
-        """
-        return (
-            f"{candidate.candidate_name} "
-            f"({candidate.resume_name}) scored "
-            f"{candidate.final_score:.1f} and is categorized as "
-            f"{candidate.match_category}. "
-            f"Experience: {candidate.experience_years} years. "
-            f"Education: {candidate.education}."
+        job_description: str,
+        top_k: int = DEFAULT_TOP_K,
+    ) -> Any:
+        return self.matcher.match_candidates(
+            job_description,
+            top_k=top_k,
         )
-    
+
+    def enrich_candidates(self, candidates: Any) -> Any:
+        return self.matcher.enrich_candidates(candidates)
+
+    def compare_candidates(self, candidates: Any) -> Any:
+        return self.matcher.compare_candidates(candidates)
+
+    def generate_interview_plan(self, candidates: Any) -> Any:
+        return self.matcher.generate_interview_plan(candidates)
+
+    def generate_report(
+        self,
+        job_description: str,
+        candidates: Any,
+        comparison: Any = None,
+        interview_plan: Any = None,
+    ) -> Any:
+        return self.matcher.generate_report(
+            job_description=job_description,
+            candidates=candidates,
+            comparison=comparison,
+            interview_plan=interview_plan,
+        )

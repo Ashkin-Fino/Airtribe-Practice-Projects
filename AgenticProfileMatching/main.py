@@ -1,12 +1,9 @@
-from agent.graph_builder import build_graph
+from matching_agent import HiringAgent
 
-graph = build_graph()
-state = {
-    "job_description": open("job_description.txt").read(),
-    "match_result": None,
-    "report": None,
-    "reasoning": [],
-}
-result = graph.invoke(state)
-report = result["report"]
-print(report)
+
+if __name__ == "__main__":
+    with open("job_description.txt", encoding="utf-8") as file:
+        job_description = file.read()
+
+    result = HiringAgent().run_agent(job_description)
+    print(result["report"])

@@ -118,13 +118,13 @@ def extract_text(file_path: str) -> str:
 # Resources: read-only filesystem data
 # ---------------------------------------------------------------------------
 
-@mcp.resource("file://{file_path}", mime_type="text/plain")
+@mcp.resource("file://{+file_path}", mime_type="text/plain")
 def read_file_resource(file_path: str) -> str:
     """Read a supported document as text."""
     return extract_text(unquote(file_path))
 
 
-@mcp.resource("directory://{directory_path}", mime_type="application/json")
+@mcp.resource("directory://{+directory_path}", mime_type="application/json")
 def list_files_resource(directory_path: str) -> str:
     """List supported files in a directory with metadata."""
     return json.dumps(
@@ -141,8 +141,8 @@ def capabilities_resource() -> str:
             "server": "filesystem-mcp-server",
             "supported_extensions": sorted(SUPPORTED_EXTENSIONS),
             "resources": [
-                "file://{file_path}",
-                "directory://{directory_path}",
+                "file://{+file_path}",
+                "directory://{+directory_path}",
                 "filesystem://capabilities",
             ],
             "tools": [
@@ -150,8 +150,8 @@ def capabilities_resource() -> str:
                 "write_file",
                 "summarize_file",
                 "generate_summary_file",
-                "watch_directory",
                 "batch_process",
+                "watch_directory",
             ],
         },
         indent=2,
@@ -250,17 +250,17 @@ def generate_summary_file(
     }
 
 
+# ---------------------------------------------------------------------------
+# Phase 2 tools
+# ---------------------------------------------------------------------------
+
 @mcp.tool()
 def watch_directory(
     directory: str,
     duration_seconds: int = 30,
     poll_interval_seconds: int = 2,
 ) -> list[dict[str, Any]]:
-    """Watch a directory for newly added supported files for a limited time.
-
-    This intentionally uses simple polling so Phase 2 has no extra dependency.
-    The tool returns when the duration expires or when a new file is detected.
-    """
+    """Watch a directory for newly appearing supported files."""
     if duration_seconds <= 0:
         raise ValueError("duration_seconds must be greater than 0")
     if poll_interval_seconds <= 0:
@@ -276,13 +276,16 @@ def watch_directory(
         Path(item["path"]).resolve()
         for item in list_supported_files(directory)
     }
+
     detected = []
     deadline = time.monotonic() + duration_seconds
 
     while time.monotonic() < deadline:
         current_files = list_supported_files(directory)
+
         for item in current_files:
             path = Path(item["path"]).resolve()
+
             if path not in known_files:
                 detected.append(item)
                 known_files.add(path)
@@ -290,7 +293,8 @@ def watch_directory(
         if detected:
             return detected
 
-        time.sleep(min(poll_interval_seconds, max(0, deadline - time.monotonic())))
+        remaining = max(0, deadline - time.monotonic())
+        time.sleep(min(poll_interval_seconds, remaining))
 
     return detected
 
@@ -300,17 +304,17 @@ def batch_process(
     file_paths: list[str],
     operation: str = "read",
 ) -> list[dict[str, Any]]:
-    """Process multiple supported files in one MCP request.
-
-    Supported operations are ``read`` and ``metadata``. Each file is processed
-    independently so an error in one file does not fail the entire batch.
-    """
+    """Process multiple supported files while isolating individual errors."""
     if not file_paths:
         return []
+
     if operation not in {"read", "metadata"}:
-        raise ValueError("operation must be either 'read' or 'metadata'")
+        raise ValueError(
+            "operation must be either 'read' or 'metadata'"
+        )
 
     results = []
+
     for file_path in file_paths:
         try:
             path = resolve_path(file_path)
@@ -318,29 +322,37 @@ def batch_process(
             _ensure_supported(path)
 
             if operation == "read":
-                results.append({
-                    "path": str(path),
-                    "status": "success",
-                    "content": extract_text(str(path)),
-                })
+                results.append(
+                    {
+                        "path": str(path),
+                        "status": "success",
+                        "content": extract_text(str(path)),
+                    }
+                )
             else:
                 stat = path.stat()
-                results.append({
-                    "path": str(path),
-                    "status": "success",
-                    "name": path.name,
-                    "extension": path.suffix.lower(),
-                    "size": stat.st_size,
-                    "modified_at": datetime.fromtimestamp(
-                        stat.st_mtime, tz=timezone.utc
-                    ).isoformat(),
-                })
+                results.append(
+                    {
+                        "path": str(path),
+                        "status": "success",
+                        "name": path.name,
+                        "extension": path.suffix.lower(),
+                        "size": stat.st_size,
+                        "modified_at": datetime.fromtimestamp(
+                            stat.st_mtime,
+                            tz=timezone.utc,
+                        ).isoformat(),
+                    }
+                )
+
         except Exception as exc:
-            results.append({
-                "path": str(resolve_path(file_path)),
-                "status": "error",
-                "error": str(exc),
-            })
+            results.append(
+                {
+                    "path": str(resolve_path(file_path)),
+                    "status": "error",
+                    "error": str(exc),
+                }
+            )
 
     return results
 
