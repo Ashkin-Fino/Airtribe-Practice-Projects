@@ -1,0 +1,35 @@
+Emma Wilson
+Email: emma.wilson@email.com
+Phone: +1-555-101-2020
+Location: Chicago, USA
+
+Professional Summary:
+    Software Engineer with 6 years of experience developing enterprise backend systems using Java and Spring Boot. Experienced in microservices, cloud platforms, and distributed systems.
+
+Skills:
+    - Java
+    - Spring Boot
+    - Spring Security
+    - Microservices
+    - AWS
+    - PostgreSQL
+    - Docker
+
+Experience:
+    Senior Software Engineer
+    BluePeak Technologies
+    2021 - Present
+        - Designed and developed Spring Boot microservices.
+        - Implemented OAuth2 authentication using Spring Security.
+        - Migrated legacy applications to AWS.
+
+    Software Engineer
+    Digital Core Systems
+    2018 - 2021
+        - Developed REST APIs using Java and Spring.
+        - Improved database performance by optimizing SQL queries.
+
+Education:
+    Bachelor of Computer Science
+    University of Illinois
+    2017
