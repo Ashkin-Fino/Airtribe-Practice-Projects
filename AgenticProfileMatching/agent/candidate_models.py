@@ -1,35 +1,15 @@
-"""
-Canonical data models used throughout Milestone 3.
-
-Milestone 2 returns dictionaries as output. This module converts those
-dictionaries into strongly-typed objects so the rest of the application
-doesn't depend on Milestone 2's implementation details.
-"""
-
 from __future__ import annotations
 
-from dataclasses import dataclass, field, asdict
+from dataclasses import asdict, dataclass, field
 from typing import Any
 
 
-# -------------------------------------------------------------------------
-# Job Requirements
-# -------------------------------------------------------------------------
-
 @dataclass
 class JobRequirements:
-    """
-    Structured representation of a job description.
-    """
-
     raw_text: str
-
     skills: list[str] = field(default_factory=list)
-
     experience_years: int = 0
-
     education: str = ""
-
     metadata: dict[str, Any] = field(default_factory=dict)
 
     @classmethod
@@ -46,51 +26,36 @@ class JobRequirements:
         return asdict(self)
 
 
-# -------------------------------------------------------------------------
-# Candidate
-# -------------------------------------------------------------------------
-
 @dataclass
 class Candidate:
-    """
-    Canonical candidate model used by Milestone 3.
-    """
-
-    # Identity
     candidate_name: str
     resume_name: str
 
-    # Final ranking
     final_score: float = 0.0
     match_category: str = ""
 
-    # Resume metadata
     experience_years: int = 0
     education: str = ""
-
-    # Resume extracted skills
     skills: list[str] = field(default_factory=list)
 
-    # Matching details
     matched_skills: list[str] = field(default_factory=list)
     missing_skills: list[str] = field(default_factory=list)
     extra_skills: list[str] = field(default_factory=list)
+
     skill_coverage: float = 0.0
 
     reasoning: str = ""
     summary: str = ""
+
     strengths: list[str] = field(default_factory=list)
     weaknesses: list[str] = field(default_factory=list)
+
     risk_level: str = ""
 
     metadata: dict[str, Any] = field(default_factory=dict)
 
     @classmethod
     def from_job_matcher(cls, data: dict[str, Any]) -> "Candidate":
-        """
-        Convert JobMatcher output into a Candidate object.
-        """
-
         return cls(
             candidate_name=data.get("candidate_name", ""),
             resume_name=data.get("resume_name", ""),
@@ -101,8 +66,13 @@ class Candidate:
             skills=data.get("skills", []),
             matched_skills=data.get("matched_skills", []),
             missing_skills=data.get("missing_skills", []),
+            extra_skills=data.get("extra_skills", []),
+            skill_coverage=float(data.get("skill_coverage", 0.0)),
             reasoning=data.get("reasoning", ""),
             summary=data.get("summary", ""),
+            strengths=data.get("strengths", []),
+            weaknesses=data.get("weaknesses", []),
+            risk_level=data.get("risk_level", ""),
             metadata=data,
         )
 
@@ -110,22 +80,17 @@ class Candidate:
         return asdict(self)
 
 
-# -------------------------------------------------------------------------
-# Match Result
-# -------------------------------------------------------------------------
-
 @dataclass
 class MatchResult:
-    """
-    Standard response returned by AgentTools.
-    """
-
     job_requirements: JobRequirements
+
     candidates: list[Candidate] = field(default_factory=list)
     total_candidates: int = 0
-    comparison: dict = field(default_factory=dict)
+
+    comparison: dict[str, Any] = field(default_factory=dict)
     final_recommendation: str = ""
-    interview_plan: dict = field(default_factory=dict)
+
+    interview_plan: dict[str, Any] = field(default_factory=dict)
 
     @classmethod
     def from_job_matcher(
@@ -153,5 +118,8 @@ class MatchResult:
                 candidate.to_dict()
                 for candidate in self.candidates
             ],
+            "comparison": self.comparison,
+            "final_recommendation": self.final_recommendation,
+            "interview_plan": self.interview_plan,
         }
     
