@@ -1,0 +1,35 @@
+David Kumar
+Email: david.kumar@email.com
+Phone: +1-555-202-3030
+Location: Toronto, Canada
+
+Professional Summary:
+    Python Developer with expertise in automation, data engineering, and cloud-native applications. Experienced in building ETL pipelines and backend services.
+
+Skills:
+    - Python
+    - Flask
+    - Pandas
+    - SQL
+    - AWS Lambda
+    - Docker
+    - Git
+
+Experience:
+    Python Developer
+    DataWorks Inc
+    2022 - Present
+        - Developed ETL pipelines using Python.
+        - Built automation tools for business workflows.
+        - Integrated AWS Lambda services.
+
+    Junior Developer
+    Insight Analytics
+    2020 - 2022
+        - Created reporting systems using Python.
+        - Automated data extraction processes.
+
+Education:
+    Bachelor of Software Engineering
+    University of Toronto
+    2019

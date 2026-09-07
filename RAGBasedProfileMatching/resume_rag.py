@@ -469,6 +469,9 @@ class VectorStore:
         return self.collection.count()
     
     def search(self, query_embedding, top_k=10):
+        self.collection = self.client.get_or_create_collection(
+            name=self.COLLECTION_NAME
+        )
 
         results = self.collection.query(
             query_embeddings=[query_embedding],
